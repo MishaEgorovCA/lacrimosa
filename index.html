@@ -5,7 +5,7 @@
     <style>
         body {
             font-family: Helvetica, Arial, sans-serif;
-            color: rgb(247, 247, 247);
+            color: rgb(189, 189, 189);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -22,11 +22,41 @@
                 font-size: 4vw;
             }
         }
+
+        #countdown {
+            font-size: 2rem;
+            color: rgb(129, 129, 129);
+        }
     </style>
 </head>
 
 <body>
-    <p>made you look.</p>
+    <p>coming soon.</p>
+    <div id="countdown"></div>
+    <script>
+        function updateCountdown() {
+            const targetDate = new Date('2025-04-17T09:00:00');
+            const now = new Date();
+            const timeDiff = targetDate - now;
+
+            if (timeDiff <= 0) {
+                document.getElementById('countdown').innerHTML = "The time has arrived!";
+                clearInterval(timer);
+                return;
+            }
+
+            const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+            document.getElementById('countdown').innerHTML =
+                `${days}d ${hours}h ${minutes}m ${seconds}s`;
+        }
+
+        updateCountdown();
+        const timer = setInterval(updateCountdown, 1000);
+    </script>
 </body>
 
 </html>
