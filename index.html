@@ -4,8 +4,9 @@
 <head>
     <style>
         body {
-            font-family: Helvetica, Arial, sans-serif;
-            color: rgb(189, 189, 189);
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 3mm;
+            color: rgb(247, 247, 247);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -22,16 +23,10 @@
                 font-size: 4vw;
             }
         }
-
-        #countdown {
-            font-size: 2rem;
-            color: rgb(129, 129, 129);
-        }
     </style>
 </head>
 
 <body>
-    <p>coming soon.</p><br>
     <div id="countdown"></div>
     <script>
         function updateCountdown() {
@@ -40,18 +35,18 @@
             const timeDiff = targetDate - now;
 
             if (timeDiff <= 0) {
-                document.getElementById('countdown').innerHTML = "The time has arrived!";
+                document.getElementById('countdown').innerHTML = "00 00 00 00";
                 clearInterval(timer);
                 return;
             }
 
-            const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+            const days = String(Math.floor(timeDiff / (1000 * 60 * 60 * 24))).padStart(2, '0');
+            const hours = String(Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
+            const minutes = String(Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+            const seconds = String(Math.floor((timeDiff % (1000 * 60)) / 1000)).padStart(2, '0');
 
             document.getElementById('countdown').innerHTML =
-                `${days}d ${hours}h ${minutes}m ${seconds}s`;
+                `${days} ${hours} ${minutes} ${seconds}`;
         }
 
         updateCountdown();
