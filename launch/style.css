@@ -6,15 +6,18 @@
 
 .button-container {
     position: absolute;
-    top: 50%;
-    left: 45%;
-    transform: translate(-50%, -50%);
-    text-align: center;
+    top: 0;
+    left: -3%;
+    /* Moved slightly to the left */
+    width: 100%;
+    height: 100%;
     display: flex;
+    justify-content: center;
     align-items: center;
-    gap: 10px;
+    text-align: center;
 }
 
+/* Need to fix warping to new line and difference in size when typing */
 button {
     font-family: 'Helvetica Neue Light', Helvetica, Arial, sans-serif;
     font-size: 1.6em;
@@ -61,6 +64,7 @@ p {
     word-break: break-word;
     padding: 12vw;
     font-family: 'Helvetica Neue Light', Helvetica, Arial, sans-serif;
+    font-size: 1.6em;
     /* Relative to window size */
     color: #f3f3f3;
 }
