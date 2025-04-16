@@ -26,13 +26,9 @@ async function preOrder() {
     if (buttonContainer) {
         buttonContainer.remove();
         const textOutput = document.querySelector(".textOutput");
-        if (textOutput) {
-            textOutput.style.display = "block";
-            const textArea = textOutput.querySelector("#txt");
-            if (textArea) {
-            textArea.style.display = "block";
-            }
-        }
+        textOutput.style.display = "block";
+        const textArea = textOutput.querySelector("#txt");
+        textArea.style.display = "block";
         initializeUserInput();
         var name = await requestName();
         var email = await requestEmail();

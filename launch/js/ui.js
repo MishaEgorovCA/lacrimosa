@@ -27,8 +27,6 @@ export function addText(text) {
     span.appendChild(textNode);
     span.classList.add("fade-in");
     cursor.parentNode.insertBefore(span, cursor);
-    //Scroll to bottom
-    document.body.scrollIntoView({ behavior: "smooth", block: "end" });
 }
 
 export function removeText() {
