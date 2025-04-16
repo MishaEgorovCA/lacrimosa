@@ -7,7 +7,7 @@
 .button-container {
     position: absolute;
     top: 50%;
-    left: 50%;
+    left: 45%;
     transform: translate(-50%, -50%);
     text-align: center;
     display: flex;
@@ -17,6 +17,7 @@
 
 button {
     font-family: 'Helvetica Neue Light', Helvetica, Arial, sans-serif;
+    font-size: 1.6em;
     background-color: #f2f2f2;
     border: none;
     border-radius: 5px;
@@ -34,7 +35,7 @@ button:hover {
 p {
     font-family: 'Helvetica Neue Light', Helvetica, Arial, sans-serif;
     color: #808080;
-    font-size: 0.8em;
+    font-size: 1.6em;
     margin-right: 50px;
 }
 
@@ -71,7 +72,7 @@ p {
 textarea {
     /*inherit font and alignements from textOutput*/
     font-family: inherit;
-    font-size: 160px;
+    font-size: 1.6em;
     padding: inherit;
     margin: 0;
     justify-content: inherit;
