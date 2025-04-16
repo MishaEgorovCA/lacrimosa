@@ -1,0 +1,114 @@
+@font-face {
+    font-family: 'Helvetica Neue Light';
+    src:
+        url('/fonts/HelveticaNeueLight.otf') format('opentype');
+}
+
+.button-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+button {
+    font-family: 'Helvetica Neue Light', Helvetica, Arial, sans-serif;
+    background-color: #f2f2f2;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 13px;
+    color: #808080;
+    cursor: pointer;
+    display: inline-block;
+    transition: background-color 0.7s ease;
+}
+
+button:hover {
+    background-color: #d9d9d9;
+}
+
+p {
+    font-family: 'Helvetica Neue Light', Helvetica, Arial, sans-serif;
+    color: #808080;
+    font-size: 0.8em;
+    margin-right: 50px;
+}
+
+.cursor {
+    display: none;
+    width: 2px;
+    height: 0.9em;
+    background-color: #171717;
+    animation: none;
+}
+
+.textOutput {
+    letter-spacing: 0.07em;
+    word-break: break-word;
+    padding: 12vw;
+    font-family: 'Helvetica Neue Light', Helvetica, Arial, sans-serif;
+    /* Relative to window size */
+    font-size: 5mm;
+    color: #f3f3f3;
+    /* Align text to the top left */
+    justify-content: flex-start;
+    /* Align text to the top left */
+    align-items: flex-start;
+    /* height: 100vh; */
+    margin: 0;
+}
+
+.fade-in {
+    animation: text-fade 2s forwards;
+}
+
+textarea {
+    /*inherit font and alignements from textOutput*/
+    font-family: inherit;
+    font-size: 160px;
+    padding: inherit;
+    margin: 0;
+    justify-content: inherit;
+    align-items: inherit;
+    background-color: transparent;
+    outline: none;
+    caret-color: transparent;
+
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: calc(99% - 24vw);
+    height: calc(99% - 24vw);
+    padding: 12vw;
+    opacity: 0;
+}
+
+
+
+@keyframes cursor-blink {
+    0% {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes text-fade {
+    0% {
+        color: #464646;
+    }
+
+    100% {
+        color: #f3f3f3;
+    }
+}
