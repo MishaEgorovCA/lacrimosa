@@ -16,12 +16,8 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-var messagesDB = collection(getFirestore(app), "messages");
+var emailsDB = collection(getFirestore(app), "mail-list");
 
-export function addEntry(message, isDeleted = false) {
-    return; //addDoc(messagesDB, { data: message, timestamp: new Date(), deleted: isDeleted });
-}
-
-export function getEntries() {
-    return; //TODO
+export function addEntry(name, email) {
+    console.log(addDoc(emailsDB, { name: name, email: email, timestamp: new Date() }));
 }

@@ -1,7 +1,7 @@
 @font-face {
     font-family: 'Helvetica Neue Light';
     src:
-        url('/fonts/HelveticaNeueLight.otf') format('opentype');
+        url('fonts/HelveticaNeueLight.otf') format('opentype');
 }
 
 .button-container {
@@ -47,19 +47,21 @@ p {
 }
 
 .textOutput {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
     letter-spacing: 0.07em;
     word-break: break-word;
     padding: 12vw;
     font-family: 'Helvetica Neue Light', Helvetica, Arial, sans-serif;
     /* Relative to window size */
-    font-size: 5mm;
     color: #f3f3f3;
-    /* Align text to the top left */
-    justify-content: flex-start;
-    /* Align text to the top left */
-    align-items: flex-start;
-    /* height: 100vh; */
-    margin: 0;
 }
 
 .fade-in {
