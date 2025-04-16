@@ -27,6 +27,7 @@ export function addText(text) {
     span.appendChild(textNode);
     span.classList.add("fade-in");
     cursor.parentNode.insertBefore(span, cursor);
+    resetCursorTimer();
 }
 
 export function removeText() {
