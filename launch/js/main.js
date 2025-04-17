@@ -22,7 +22,6 @@ function isValidEmail(email) {
 }
 
 async function preOrder() {
-    await wait(300);
     const buttonContainer = document.querySelector(".button-container");
     if (buttonContainer) {
         buttonContainer.remove();
@@ -46,7 +45,15 @@ async function preOrder() {
 document.getElementById("pre-order").addEventListener("click", preOrder);
 
 async function requestName() {
-    await display("please enter your name.");
+    lockInput();
+    deleteText();
+    ui.showCursor();
+    await wait(1500);
+    await typeDisplayText("please enter your name.");
+    await wait(showTime);
+    ui.hideCursor();
+    deleteText();
+    unlockInput();
     return new Promise((resolve) => {
         function handleTextEntered(event) {
             document.removeEventListener("textEntered", handleTextEntered);
