@@ -37,6 +37,7 @@
             if (timeDiff <= 0) {
                 document.getElementById('countdown').innerHTML = "00 00 00 00";
                 clearInterval(timer);
+                setTimeout(() => location.reload(), 5000);
                 return;
             }
 
