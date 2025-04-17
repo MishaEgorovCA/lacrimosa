@@ -50,7 +50,7 @@ async function requestName() {
     ui.showCursor();
     await wait(1500);
     await typeDisplayText("please enter your name.");
-    await wait(showTime);
+    await wait(1500);
     ui.hideCursor();
     deleteText();
     unlockInput();
@@ -204,7 +204,7 @@ function typeDisplayText(text, speed = 90, varience = 80) {
                 if (text[i] == " ")
                     s *= 2;
 
-                insertText(text[i]);
+                ui.addText(text[i], false);
                 i++;
                 setTimeout(typeChar, s);
             } else {

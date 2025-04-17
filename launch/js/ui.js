@@ -21,14 +21,15 @@ export function hideCursor() {
     document.querySelector("textarea").blur();
 }
 
-export function addText(text) {
+export function addText(text, fadeIn = true) {
     var textNode = document.createTextNode(text);
     var span = document.createElement("span");
     span.appendChild(textNode);
-    span.classList.add("fade-in");
+    if (fadeIn) span.classList.add("fade-in");
     cursor.parentNode.insertBefore(span, cursor);
     resetCursorTimer();
 }
+
 
 export function removeText() {
     var previousSibling = cursor.previousSibling;
