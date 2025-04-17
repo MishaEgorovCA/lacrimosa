@@ -222,7 +222,7 @@ function typeDisplayText(text, speed = 75, varience = 40) {
                 if (text[i] == " ")
                     s *= 2;
 
-                ui.addText(text[i], false);
+                ui.addText(text[i]);
                 i++;
                 setTimeout(typeChar, s);
             } else {
