@@ -38,8 +38,7 @@ async function preOrder() {
         }
         api.addEntry(name, email);
         const firstName = name.split(" ")[0];
-        await display("thank you " + firstName, 10000);
-        location.reload();
+        await display("thank you " + firstName + ".", 10000000);
     }
 }
 document.getElementById("pre-order").addEventListener("click", preOrder);
@@ -50,9 +49,9 @@ async function requestName() {
     lockInput();
     deleteText();
     ui.showCursor();
-    await wait(1500);
-    await typeDisplayText("please enter your name.");
-    await wait(1500);
+    await wait(1000);
+    await typeDisplayText("please write your name.");
+    await wait(1000);
     ui.hideCursor();
     promptOnScreen = true;
     unlockInput();
@@ -69,9 +68,9 @@ async function requestEmail() {
     lockInput();
     deleteText();
     ui.showCursor();
-    await wait(1500);
-    await typeDisplayText("please enter your email.");
-    await wait(1500);
+    await wait(1000);
+    await typeDisplayText("please write your email.");
+    await wait(1000);
     ui.hideCursor();
     promptOnScreen = true;
     unlockInput();
@@ -213,7 +212,7 @@ function wait(time) {
     return new Promise((resolve) => setTimeout(resolve, time));
 }
 
-function typeDisplayText(text, speed = 90, varience = 80) {
+function typeDisplayText(text, speed = 35, varience = 40) {
     return new Promise((resolve) => {
         let i = 0;
         function typeChar() {
@@ -234,11 +233,11 @@ function typeDisplayText(text, speed = 90, varience = 80) {
     });
 }
 
-async function display(text, showTime = 1500) {
+async function display(text, showTime = 1000) {
     lockInput();
     deleteText();
     ui.showCursor();
-    await wait(1500);
+    await wait(1000);
     await typeDisplayText(text);
     await wait(showTime);
     ui.hideCursor();

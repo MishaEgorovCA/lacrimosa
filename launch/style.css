@@ -112,10 +112,10 @@ textarea {
 
 @keyframes text-fade {
     0% {
-        color: #464646;
+        color: #f3f3f3;
     }
 
     100% {
-        color: #f3f3f3;
+        color: #464646;
     }
 }
