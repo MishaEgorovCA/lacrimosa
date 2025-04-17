@@ -37,12 +37,14 @@ async function preOrder() {
             email = await requestEmail();
         }
         api.addEntry(name, email);
-        await display("thank you " + name + ".", 3000);
-        await display("I will email you at " + email + " when shipping is available.", 6000);
+        const firstName = name.split(" ")[0];
+        await display("thank you " + firstName, 10000);
         location.reload();
     }
 }
 document.getElementById("pre-order").addEventListener("click", preOrder);
+
+var promptOnScreen = false;
 
 async function requestName() {
     lockInput();
@@ -52,7 +54,7 @@ async function requestName() {
     await typeDisplayText("please enter your name.");
     await wait(1500);
     ui.hideCursor();
-    deleteText();
+    promptOnScreen = true;
     unlockInput();
     return new Promise((resolve) => {
         function handleTextEntered(event) {
@@ -64,7 +66,15 @@ async function requestName() {
 }
 
 async function requestEmail() {
-    await display("please enter your email.");
+    lockInput();
+    deleteText();
+    ui.showCursor();
+    await wait(1500);
+    await typeDisplayText("please enter your email.");
+    await wait(1500);
+    ui.hideCursor();
+    promptOnScreen = true;
+    unlockInput();
     return new Promise((resolve) => {
         function handleTextEntered(event) {
             document.removeEventListener("textEntered", handleTextEntered);
@@ -77,18 +87,27 @@ async function requestEmail() {
 
 
 function initializeUserInput() {
-    document.addEventListener("keydown", showCursor);
     document.addEventListener("mousedown", showCursor);
     document.getElementById("txt").addEventListener("input", mobileType);
     document.addEventListener("keydown", handleControl);
 }
 
 function showCursor() {
-    if (!inputLocked) ui.showCursor();
+    if (inputLocked) return;
+    ui.showCursor();
+    if (promptOnScreen) {
+        promptOnScreen = false;
+        deleteText();
+    }
 }
 
 function handleControl(event) {
     if (inputLocked) return;
+    showCursor();
+    if (promptOnScreen) {
+        promptOnScreen = false;
+        deleteText();
+    }
     switch (event.key) {
         case "Backspace":
             removeLastCharacter();
