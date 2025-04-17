@@ -15,10 +15,10 @@ function unlockInput() {
 
 function isValidEmail(email) {
     return String(email)
-    .toLowerCase()
-    .match(
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-    );
+        .toLowerCase()
+        .match(
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        );
 }
 
 async function preOrder() {
@@ -162,7 +162,7 @@ function typeText(event) {
         key = key.substring(1);
     }
     //if (key.length === 1) {
-    
+
     insertText(key[key.length - 1]);
     ui.resetTextInput();
     //}
@@ -186,7 +186,7 @@ function wait(time) {
     return new Promise((resolve) => setTimeout(resolve, time));
 }
 
-function typeDisplayText(text, speed = 120, varience = 80) {
+function typeDisplayText(text, speed = 90, varience = 80) {
     return new Promise((resolve) => {
         let i = 0;
         function typeChar() {
@@ -207,7 +207,7 @@ function typeDisplayText(text, speed = 120, varience = 80) {
     });
 }
 
-async function display(text, showTime = 1500){
+async function display(text, showTime = 1500) {
     lockInput();
     deleteText();
     ui.showCursor();

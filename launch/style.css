@@ -4,11 +4,14 @@
         url('fonts/HelveticaNeueLight.otf') format('opentype');
 }
 
+body {
+    font-size: 1.2em;
+}
+
 .button-container {
     position: absolute;
     top: 0;
-    left: -3%;
-    /* Moved slightly to the left */
+    left: -6%;
     width: 100%;
     height: 100%;
     display: flex;
@@ -17,14 +20,13 @@
     text-align: center;
 }
 
-/* Need to fix warping to new line and difference in size when typing */
 button {
     font-family: 'Helvetica Neue Light', Helvetica, Arial, sans-serif;
-    font-size: 1.6em;
+    font-size: inherit;
     background-color: #f2f2f2;
     border: none;
     border-radius: 5px;
-    padding: 5px 13px;
+    padding: 8px 17px;
     color: #808080;
     cursor: pointer;
     display: inline-block;
@@ -38,7 +40,7 @@ button:hover {
 p {
     font-family: 'Helvetica Neue Light', Helvetica, Arial, sans-serif;
     color: #808080;
-    font-size: 1.6em;
+    font-size: inherit;
     margin-right: 50px;
 }
 
@@ -64,7 +66,7 @@ p {
     word-break: break-word;
     padding: 12vw;
     font-family: 'Helvetica Neue Light', Helvetica, Arial, sans-serif;
-    font-size: 1.6em;
+    font-size: inherit;
     /* Relative to window size */
     color: #f3f3f3;
 }
@@ -76,7 +78,7 @@ p {
 textarea {
     /*inherit font and alignements from textOutput*/
     font-family: inherit;
-    font-size: 1.6em;
+    font-size: inherit;
     padding: inherit;
     margin: 0;
     justify-content: inherit;
