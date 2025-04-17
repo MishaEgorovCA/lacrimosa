@@ -27,7 +27,7 @@ async function preOrder() {
         buttonContainer.remove();
         const textOutput = document.querySelector(".textOutput");
         textOutput.style.display = "block";
-        const textArea = textOutput.querySelector("#txt");
+        const textArea = document.querySelector("#txt");
         textArea.style.display = "block";
         initializeUserInput();
         var name = await requestName();

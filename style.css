@@ -54,18 +54,20 @@ p {
     position: absolute;
     top: 50%;
     left: 50%;
+    width: 99%;
+    height: auto;
     transform: translate(-50%, -50%);
     text-align: center;
     display: flex;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
     gap: 10px;
 
     letter-spacing: 0.07em;
     word-break: break-word;
-    padding: 12vw;
     font-family: 'Helvetica Neue Light', Helvetica, Arial, sans-serif;
     font-size: inherit;
-    /* Relative to window size */
     color: #464646;
 }
 
@@ -74,13 +76,12 @@ p {
 }
 
 textarea {
-    /*inherit font and alignements from textOutput*/
+    /* inherit font and alignments from textOutput */
     font-family: inherit;
-    font-size: inherit;
+    font-size: 1000px;
+    /* Ensure minimum font size to prevent zoom */
     padding: inherit;
     margin: 0;
-    justify-content: inherit;
-    align-items: inherit;
     background-color: transparent;
     outline: none;
     caret-color: transparent;
@@ -92,6 +93,15 @@ textarea {
     height: calc(99% - 24vw);
     padding: 12vw;
     opacity: 0;
+
+    /* Prevent mobile zoom and ensure the page remains visible */
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+
+    /* Disable text wrapping */
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 
