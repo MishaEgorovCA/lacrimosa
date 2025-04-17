@@ -212,7 +212,7 @@ function wait(time) {
     return new Promise((resolve) => setTimeout(resolve, time));
 }
 
-function typeDisplayText(text, speed = 65, varience = 40) {
+function typeDisplayText(text, speed = 75, varience = 40) {
     return new Promise((resolve) => {
         let i = 0;
         function typeChar() {
