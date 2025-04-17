@@ -93,11 +93,11 @@ function initializeUserInput() {
 
 function showCursor() {
     if (inputLocked) return;
-    ui.showCursor();
     if (promptOnScreen) {
         promptOnScreen = false;
         deleteText();
     }
+    ui.showCursor();
 }
 
 function handleControl(event) {
