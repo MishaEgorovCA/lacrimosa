@@ -10,13 +10,14 @@ function resetCursorTimer() {
 }
 
 export function showCursor() {
+    cursor.style.visibility = "visible";
     cursor.style.display = "inline-block";
     cursor.style.animation = "cursor-blink 1s infinite";
     resetCursorTimer();
 }
 
 export function hideCursor() {
-    cursor.style.display = "none";
+    cursor.style.visibility = "hidden";
     cursor.style.animation = "none";
     document.querySelector("textarea").blur();
 }
