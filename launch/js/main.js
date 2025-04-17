@@ -212,12 +212,12 @@ function wait(time) {
     return new Promise((resolve) => setTimeout(resolve, time));
 }
 
-function typeDisplayText(text, speed = 35, varience = 40) {
+function typeDisplayText(text, speed = 65, varience = 40) {
     return new Promise((resolve) => {
         let i = 0;
         function typeChar() {
             if (i < text.length) {
-                var s = speed + Math.random() * varience;
+                var s = speed + (Math.random() * varience - varience / 2);
                 //think a bit after a space bar
                 if (text[i] == " ")
                     s *= 2;
