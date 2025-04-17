@@ -2,57 +2,21 @@
 <html>
 
 <head>
-    <style>
-        body {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            font-size: 3mm;
-            color: rgb(247, 247, 247);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        p {
-            font-size: 2vw;
-        }
-
-        @media (max-width: 768px) {
-            p {
-                font-size: 4vw;
-            }
-        }
-    </style>
+    <title>⠀</title>
+    <link href="favicon.png" rel="icon" type="image/x-icon">
+    <link rel="stylesheet" href="style.css">
+    <script type="module" src="js/main.js"></script>
 </head>
 
 <body>
-    <div id="countdown"></div>
-    <script>
-        function updateCountdown() {
-            const targetDate = new Date('2025-04-17T09:00:00');
-            const now = new Date();
-            const timeDiff = targetDate - now;
-
-            if (timeDiff <= 0) {
-                document.getElementById('countdown').innerHTML = "00 00 00 00";
-                clearInterval(timer);
-                setTimeout(() => location.reload(), 5000);
-                return;
-            }
-
-            const days = String(Math.floor(timeDiff / (1000 * 60 * 60 * 24))).padStart(2, '0');
-            const hours = String(Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
-            const minutes = String(Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
-            const seconds = String(Math.floor((timeDiff % (1000 * 60)) / 1000)).padStart(2, '0');
-
-            document.getElementById('countdown').innerHTML =
-                `${days} ${hours} ${minutes} ${seconds}`;
-        }
-
-        updateCountdown();
-        const timer = setInterval(updateCountdown, 1000);
-    </script>
+    <div class="button-container">
+        <p>no payment until shipment.</p>
+        <button id="pre-order">pre-order now</button>
+    </div>
+    <div class="textOutput" style="display: none;">
+        <span class="cursor" id="cursor"></span>
+        <textarea id="txt" autocomplete="off" inputmode="text" style="display: none;"></textarea>
+    </div>
 </body>
 
 </html>
