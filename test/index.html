@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>⠀</title>
+        <link href="/favicon.png" rel="icon" type="image/x-icon">
+        <link rel="stylesheet" href="/style.css">
+    </head>
+
+    <body>
+
+        <div id="menu">
+            <h1>LACRIMOSA</h1>
+            <script>
+            fetch("/menu")
+                .then(res => res.text())
+                .then(html => {
+    
+                    document.getElementById("menu").innerHTML = html + "<h1>LACRIMOSA</h1>";
+                });
+            </script>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>LACRIMOSA</title>
+    <link href="favicon.png" rel="icon" type="image/x-icon">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Hero Title -->
+    <div class="hero-container">
+        <h1 class="hero-title intro-animate" id="heroTitle">LACRIMOSA</h1>
+    </div>
+
+    <!-- Teaser pill -->
+    <div id="teaserPill" class="teaser-pill" aria-label="Open navigation" tabindex="0"></div>
+
+    <!-- Bottom Bar -->
+    <div class="bottom-bar" id="bottomBar" aria-label="Navigation teaser">
+        <div class="menu-items">
+            <span class="menu-item" style="--i:0" tabindex="0">ABOUT&nbsp;US</span>
+            <span class="menu-item" style="--i:1" tabindex="0">CONTACT</span>
+            <span class="menu-item" style="--i:2" tabindex="0">PRE&nbsp;ORDER</span>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const title = document.getElementById('heroTitle');
+            const bar = document.getElementById('bottomBar');
+            const pill = document.getElementById('teaserPill');
+
+            title.addEventListener('animationend', (e) => {
+                if (e.animationName === 'titleIntro') {
+                    pill.classList.add('visible');
+                }
+            });
+
+            const stopIntroAnim = () => {
+                if (title.classList.contains('intro-animate')) {
+                    title.classList.remove('intro-animate');
+                    title.style.animation = 'none';
+                    void title.offsetWidth; // freeze at final frame
+                    title.style.removeProperty('animation');
+                }
+            };
+
+            const activate = () => {
+                stopIntroAnim();
+                bar.classList.add('hovered');
+                title.classList.add('dimmed');
+                pill.classList.add('raised');
+            };
+            const deactivate = () => {
+                bar.classList.remove('hovered');
+                title.classList.remove('dimmed');
+                pill.classList.remove('raised');
+                // restart subtle intro fade only if not already running
+                title.classList.remove('intro-animate');
+                void title.offsetWidth;
+                title.classList.add('intro-animate');
+            };
+
+            pill.addEventListener('mouseenter', activate);
+            pill.addEventListener('focus', activate);
+            bar.addEventListener('mouseenter', activate);
+            bar.addEventListener('focusin', activate);
+            bar.addEventListener('mouseleave', (e) => {
+                if (!bar.contains(e.relatedTarget)) deactivate();
+            });
+            bar.addEventListener('focusout', () => {
+                if (!bar.contains(document.activeElement)) deactivate();
+            });
+        });
+    </script>
+</body>
+
+</html>

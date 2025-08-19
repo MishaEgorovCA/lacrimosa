@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pencil Experience Survey</title>
+<style>
+html, body {
+  height: 100%;
+  margin: 0;
+  background-color: #fafafa;
+  font-family: "Trajan", serif;
+  font-weight: 100;
+  font-size: 27px;
+  color: rgba(0,0,0,0.7);
+  cursor: none;
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.0175) 100%);
+  z-index: 1;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(255,245,230,0.22);
+  mix-blend-mode: darken;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.section {
+  min-height: 100vh;
+  padding: 120px 400px;
+  box-sizing: border-box;
+}
+
+.title {
+  font-size: 27px;
+  font-weight: 100;
+  letter-spacing: 0.09em;
+  margin-bottom: 50px;
+}
+
+.form-group {
+  margin-bottom: 50px;
+}
+
+.label {
+  display: block;
+  font-size: 16.68px; /* title / 1.618 */
+  font-weight: 100;
+  letter-spacing: 0.09em;
+  margin-bottom: 20px;
+}
+
+.textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: "Trajan", serif;
+  font-weight: 100;
+  font-size: 16.68px;
+  letter-spacing: 0.09em;
+  color: rgba(0,0,0,0.7);
+  resize: none;
+  line-height: 1.8;
+}
+
+.textarea::placeholder {
+  color: rgba(0,0,0,0.2);
+}
+
+.continue-button {
+  font-size: 16.68px;
+  font-weight: 100;
+  letter-spacing: 0.09em;
+  color: rgba(0,0,0,0.7);
+  background: none;
+  border: none;
+  font-family: "Trajan", serif;
+  text-align: left;
+  position: fixed;
+  bottom: 100px;
+  left: 400px;
+  cursor: none;
+  padding: 12px 0;
+}
+
+#custom-cursor {
+  position: fixed;
+  top: 0; left: 0;
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  pointer-events: none;
+  background-color: rgba(0,0,0,0.05);
+  transform: translate(-50%, -50%);
+  transition: background-color 0.3s, width 0.3s, height 0.3s, opacity 0.2s;
+  z-index: 9999;
+}
+</style>
+</head>
+<body>
+
+<!-- Sections -->
+<div class="section" id="perception">
+  <div class="title">Perception</div>
+  <div class="form-group">
+    <label class="label">What is your first impression of this pencil?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="form-group">
+    <label class="label">What do you think when you see someone using this pencil?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="form-group">
+    <label class="label">Which kind of person would own this pencil?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+</div>
+
+<div class="section" id="sensory">
+  <div class="title">Sensory</div>
+  <div class="form-group">
+    <label class="label">When you first hold the pencil, which sensations or qualities stand out to you?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="form-group">
+    <label class="label">How does the pencil’s weight and texture feel in your hand—too light, too heavy, or just right?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="form-group">
+    <label class="label">Does the pencil feel balanced and comfortable to use? Why or why not?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+</div>
+
+<div class="section" id="design">
+  <div class="title">Design</div>
+  <div class="form-group">
+    <label class="label">Which part of the pencil do you notice first and why?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="form-group">
+    <label class="label">Is there anything about the pencil that surprises you—positively or negatively?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="form-group">
+    <label class="label">If you could change one thing about how it feels, looks, or behaves, what would it be?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+</div>
+
+<div class="section" id="proportion">
+  <div class="title">Proportion</div>
+  <div class="form-group">
+    <label class="label">How does the pencil’s length feel in your hand?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="form-group">
+    <label class="label">Does the width or thickness feel comfortable to use?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="form-group">
+    <label class="label">How do the proportions compare to other high-quality pencils you’ve used?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+</div>
+
+<div class="section" id="function">
+  <div class="title">Function</div>
+  <div class="form-group">
+    <label class="label">How intuitive is it to hold and use the pencil for gripping graphite?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="form-group">
+    <label class="label">How secure and reliable does the grip feel when inserting or holding graphite?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="form-group">
+    <label class="label">How easy is it to adjust or replace the graphite?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+</div>
+
+<div class="section" id="comfort">
+  <div class="title">Comfort</div>
+  <div class="form-group">
+    <label class="label">Does the titanium body feel comfortable and balanced while in use?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="form-group">
+    <label class="label">Are there any points where the pencil feels awkward or requires too much effort?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="form-group">
+    <label class="label">How does the pencil compare to traditional pencils for extended use?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+</div>
+
+<div class="section" id="lifestyle">
+  <div class="title">Lifestyle</div>
+  <div class="form-group">
+    <label class="label">Where would you expect to buy this pencil from?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="form-group">
+    <label class="label">What lifestyle or habits do you associate with someone who loves this pencil?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="form-group">
+    <label class="label">Would you consider this pencil a gift-worthy item?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+</div>
+
+<div class="section" id="value">
+  <div class="title">Value</div>
+  <div class="form-group">
+    <label class="label">Which price range feels natural for a pencil of this quality?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="form-group">
+    <label class="label">Would you consider this pencil a special or gift-worthy item based on its design and materials?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="form-group">
+    <label class="label">If you were to see this pencil in a store, where would you expect it to be sold?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+</div>
+
+<div class="section" id="feedback">
+  <div class="form-group">
+    <label class="label">Any last words?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+</div>
+
+<button class="continue-button" id="actionButton">Next</button>
+
+<div id="custom-cursor"></div>
+
+<script>
+// Custom cursor
+const customCursor = document.getElementById('custom-cursor');
+document.addEventListener('mousemove', e => {
+  customCursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`;
+});
+
+// Sections navigation
+const sections = ["perception","sensory","design","proportion","function","comfort","lifestyle","value","feedback"];
+let currentIndex = 0;
+const actionButton = document.getElementById("actionButton");
+
+function updateButtonLabel() {
+  actionButton.textContent = currentIndex < sections.length-1 ? "Next" : "Submit";
+}
+updateButtonLabel();
+
+actionButton.addEventListener("click", () => {
+  if(currentIndex === sections.length-1){
+    alert("Thank you! Your responses have been recorded.");
+    return;
+  }
+  currentIndex++;
+  document.getElementById(sections[currentIndex]).scrollIntoView({behavior:"smooth"});
+  updateButtonLabel();
+});
+</script>
+<div id="menu">
+  <script>
+  fetch("/menu")
+      .then(res => res.text())
+      .then(html => {
+
+          document.getElementById("menu").innerHTML = html;
+      });
+  </script>
+</div>
+</body>
+</html>
