@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Purchase Complete</title>
+<style>
+@font-face {
+  font-family: 'Trajan Pro';
+  src: url('fonts/TrajanPro.woff2') format('woff2'),
+       url('fonts/TrajanPro.woff') format('woff'),
+       url('fonts/TrajanPro.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  background-color: #fafafa;
+  font-family: "Trajan Pro", serif;
+  font-weight: 200;
+  font-size: 22px;
+  color: rgba(0,0,0,0.75);
+  cursor: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  scroll-behavior: smooth;
+}
+
+/* Vignette - 50% strength */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.035) 100%);
+  z-index: 1;
+}
+
+/* Warmer mask on top with 22% opacity */
+body::after {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(255,245,230,0.22);
+  mix-blend-mode: darken;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.container {
+  padding: 150px 400px;
+  opacity: 0;
+  transition: opacity 2s ease;
+  position: relative;
+  z-index: 3; /* above vignette and mask */
+}
+
+.show {
+  opacity: 1;
+}
+
+#custom-cursor {
+  position: fixed;
+  top: 0; left: 0;
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  pointer-events: none;
+  background-color: rgba(0,0,0,0.05);
+  transform: translate(-50%, -50%);
+  transition: background-color 0.3s, width 0.3s, height 0.3s, opacity 0.2s;
+  z-index: 9999;
+}
+</style>
+</head>
+<body>
+
+<div class="container" id="container">
+  <div class="title" id="thankMessage">Your pencil will arrive soon, Zbigniew.</div>
+</div>
+
+<div id="custom-cursor"></div>
+
+<script>
+// Custom cursor
+const customCursor = document.getElementById('custom-cursor');
+document.addEventListener('mousemove', e => {
+  customCursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`;
+});
+
+// Simple fade-in after page load
+window.addEventListener('load', () => {
+  const container = document.getElementById('container');
+  container.classList.add('show');
+});
+</script>
+<div id="menu">
+  <script>
+  fetch("/menu")
+      .then(res => res.text())
+      .then(html => {
+
+          document.getElementById("menu").innerHTML = html;
+      });
+  </script>
+</div>
+</body>
+</html>
