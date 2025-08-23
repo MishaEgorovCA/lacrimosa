@@ -3,7 +3,7 @@ name: Deploy Website
 on:
   push:
     branches:
-      - '**'   # only trigger on this branch
+      - dev   # only trigger on this branch
 
 jobs:
   deploy:
@@ -22,6 +22,6 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no deploy@${{ secrets.SERVER_IP }} "
             cd /var/www/lacrimosa &&
-            git fetch origin menu-bar &&
-            git reset --hard origin/menu-bar
+            git fetch origin dev &&
+            git reset --hard origin/dev
           "
