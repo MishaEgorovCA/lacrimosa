@@ -3,7 +3,7 @@ name: Deploy Website
 on:
   push:
     branches:
-      - menu-bar   # only trigger on this branch
+      - '**'   # only trigger on this branch
 
 jobs:
   deploy:
