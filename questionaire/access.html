@@ -17,6 +17,7 @@ html, body {
   font-family: 'Trajan', serif;
   font-weight: 200;
   font-size: 17px;
+  text-shadow: 0px 2px 4px rgba(0,0,0,0.09); /* 9% shadow */
   color: rgba(0,0,0,0.75);
   cursor: none;
   display: flex;
@@ -26,22 +27,22 @@ html, body {
   overflow: hidden;
 }
 
-/* Vignette - softened */
+/* subtle vignette */
 body::before {
   content: "";
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
   pointer-events: none;
-  background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.0175) 100%);
+  background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.035) 100%);
   z-index: 1;
 }
 
-/* Front mask - warmer color with 22% opacity */
+/* Pantone Silence mask at 17% opacity */
 body::after {
   content: "";
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background-color: rgba(255,245,230,0.22);
+  background-color: rgba(246,239,229,0.17); /* 17% opacity */
   mix-blend-mode: darken;
   pointer-events: none;
   z-index: 2;
@@ -64,7 +65,7 @@ p {
   letter-spacing: 0.09em;
   margin-bottom: 40px;
   color: rgba(0,0,0,0.75);
-  font-size: 22px;
+  font-size: 13.59px;
 }
 
 .code-inputs {
@@ -78,13 +79,14 @@ p {
   height: 40px;                /* smaller height */
   text-align: center;
   font-size: 20px;             /* slightly smaller text */
+ text-shadow: 0px 2px 4px rgba(0,0,0,0.09); /* 9% shadow */
   font-family: 'Trajan', serif;
   font-weight: 200;
   color: rgba(0,0,0,0.75);
   letter-spacing: 0.09em;
-  background: #fafafa;
-  border: 1px solid rgba(0,0,0,0.2);  /* thinner border */
-  border-radius: 6px;
+  background: rgba(250,250,250,0.1);
+  border: 1px solid rgba(0,0,0,0.1);  /* thinner border */
+  border-radius: 8px;
   outline: none;
 }
 
@@ -108,7 +110,6 @@ p {
 <body>
 
 <div class="container">
-  <p>Please enter your 6-digit code</p>
   <div class="code-inputs">
     <input type="text" maxlength="1" />
     <input type="text" maxlength="1" />
@@ -150,15 +151,6 @@ inputs.forEach((input, idx) => {
   });
 });
 </script>
-<div id="menu">
-  <script>
-  fetch("/menu")
-      .then(res => res.text())
-      .then(html => {
 
-          document.getElementById("menu").innerHTML = html;
-      });
-  </script>
-</div>
 </body>
 </html>

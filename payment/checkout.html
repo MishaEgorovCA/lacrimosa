@@ -25,24 +25,25 @@ html, body {
   cursor: none;
   overflow-x: hidden;
   scroll-behavior: smooth;
+  text-shadow: 0px 2px 4px rgba(0,0,0,0.09); /* 9% shadow */
 }
 
-/* Vignette - subtle */
+/* subtle vignette */
 body::before {
   content: "";
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
   pointer-events: none;
-  background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.0175) 100%);
+  background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.035) 100%);
   z-index: 1;
 }
 
-/* Warm color mask - 50% opacity */
+/* Pantone Silence mask at 17% opacity */
 body::after {
   content: "";
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background-color: rgba(253,251,243,0.5);
+  background-color: rgba(246,239,229,0.17); /* 17% opacity */
   mix-blend-mode: darken;
   pointer-events: none;
   z-index: 2;
@@ -59,6 +60,7 @@ body::after {
   font-weight: 200;
   letter-spacing: 0.14em;
   margin-bottom: 40px;
+  text-shadow: 0px 2px 4px rgba(0,0,0,0.09); /* 9% shadow */
 }
 
 .order-item, .total-line {
@@ -66,6 +68,7 @@ body::after {
   justify-content: space-between;
   margin-bottom: 12px;
   font-size: 18px;
+  text-shadow: 0px 2px 4px rgba(0,0,0,0.09); /* 9% shadow */
 }
 
 .divider {
@@ -189,7 +192,7 @@ body::after {
   <div class="title">Delivery Details</div>
   <div class="form-group">
     <label class="label">Address</label>
-    <input class="input" type="text" placeholder="123 Music Street" />
+    <input class="input" type="text" placeholder="123 Composer Street" />
   </div>
   <div class="form-group">
     <label class="label">City</label>
@@ -302,15 +305,6 @@ actionButton.addEventListener("click", () => {
   }
 });
 </script>
-<div id="menu">
-  <script>
-  fetch("/menu")
-      .then(res => res.text())
-      .then(html => {
 
-          document.getElementById("menu").innerHTML = html;
-      });
-  </script>
-</div>
 </body>
 </html>

@@ -21,6 +21,7 @@ html, body {
   font-family: "Trajan Pro", serif;
   font-weight: 200;
   font-size: 22px;
+  text-shadow: 0px 2px 4px rgba(0,0,0,0.09); /* 9% shadow */
   color: rgba(0,0,0,0.75);
   cursor: none;
   display: flex;
@@ -30,22 +31,22 @@ html, body {
   overflow: hidden;
 }
 
-/* Vignette - softened */
+/* subtle vignette */
 body::before {
   content: "";
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
   pointer-events: none;
-  background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.0175) 100%);
+  background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.035) 100%);
   z-index: 1;
 }
 
-/* Front mask - warmer color with 22% opacity */
+/* Pantone Silence mask at 17% opacity */
 body::after {
   content: "";
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background-color: rgba(255,245,230,0.22);
+  background-color: rgba(246,239,229,0.17); /* 17% opacity */
   mix-blend-mode: darken;
   pointer-events: none;
   z-index: 2;

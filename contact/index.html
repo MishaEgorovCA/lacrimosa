@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Purchase Complete</title>
+<title>Lacrimosa</title>
 <style>
 @font-face {
   font-family: 'Trajan Pro';
@@ -21,15 +21,14 @@ html, body {
   font-family: "Trajan Pro", serif;
   font-weight: 200;
   font-size: 22px;
-  text-shadow: 0px 2px 4px rgba(0,0,0,0.09); /* 9% shadow */
-  color: rgba(0,0,0,0.75);
+  color: rgba(0,0,0,0.7); /* original 70% black */
   cursor: none;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
+  flex-direction: column;
   overflow: hidden;
-  scroll-behavior: smooth;
 }
 
 /* subtle vignette */
@@ -54,15 +53,33 @@ body::after {
 }
 
 .container {
-  padding: 150px 400px;
   opacity: 0;
-  transition: opacity 2s ease;
+  transition: opacity 1.2s ease;
   position: relative;
-  z-index: 3; /* above vignette and mask */
+  z-index: 3;
 }
 
 .show {
   opacity: 1;
+}
+
+.title {
+  font-size: 22px;
+  letter-spacing: 0.08em;
+  margin: 10px 0;
+  cursor: pointer;
+  text-shadow: 0px 2px 4px rgba(0,0,0,0.09); /* 9% shadow */
+}
+
+.email {
+  opacity: 0;
+  font-size: 18px;
+  margin-top: 12px;
+  transition: opacity 0.8s ease-in-out;
+}
+
+.title:hover + .email {
+  opacity: 0.6;
 }
 
 #custom-cursor {
@@ -81,7 +98,8 @@ body::after {
 <body>
 
 <div class="container" id="container">
-  <div class="title" id="thankMessage">Thank you Zbigniew.</div>
+  <div class="title">Slow &amp; steady.</div>
+  <div class="email">contact@lacrimosa.co</div>
 </div>
 
 <div id="custom-cursor"></div>
@@ -93,12 +111,23 @@ document.addEventListener('mousemove', e => {
   customCursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`;
 });
 
-// Simple fade-in after page load
+// Fade-in on load
 window.addEventListener('load', () => {
   const container = document.getElementById('container');
-  container.classList.add('show');
+  setTimeout(() => {
+    container.classList.add('show');
+  }, 300);
 });
 </script>
-
+<div id="menu">
+            <script>
+            fetch("/menu")
+                .then(res => res.text())
+                .then(html => {
+    
+                    document.getElementById("menu").innerHTML = html;
+                });
+            </script>
+        </div>
 </body>
 </html>
