@@ -10,13 +10,14 @@
             <a style="font-size: x-small; color:aquamarine" href="/other.html">Temp Nav</a>
 
         <div id="menu">
-            <h1>Lacrimosa</h1>
+            <p>This website requires JavaScript enabled to experience.</p>
             <script>
+            let lacrimosa = "<h1>Lacrimosa</h1>";
             fetch("/menu")
                 .then(res => res.text())
                 .then(html => {
-    
-                    document.getElementById("menu").innerHTML = html + "<h1>Lacrimosa</h1>";
+
+                    document.getElementById("menu").innerHTML = html + lacrimosa;
                 });
             </script>
         </div>
