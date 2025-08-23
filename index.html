@@ -9,13 +9,13 @@
     <body>
 
         <div id="menu">
-            <h1>LACRIMOSA</h1>
+            <h1>Lacrimosa</h1>
             <script>
             fetch("/menu")
                 .then(res => res.text())
                 .then(html => {
     
-                    document.getElementById("menu").innerHTML = html + "<h1>LACRIMOSA</h1>";
+                    document.getElementById("menu").innerHTML = html + "<h1>Lacrimosa</h1>";
                 });
             </script>
         </div>
