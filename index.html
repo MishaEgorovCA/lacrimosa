@@ -1,24 +1,20 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>&#8203;</title>
+        <title>&nbsp;&#8202;&#8199;&#8192;&#10240;&#65279;&#6158;&#8203;&#12288;&#8203;&nbsp;&#8202;&#8199;&#8192;&#10240;&#65279;&#6158;&#8203;&#12288;&#8203;&nbsp;&#8202;&#8199;&#8192;&#10240;&#65279;&#6158;&#8203;&#12288;&#8203;&nbsp;&#8202;&#8199;&#8192;&#10240;&#65279;&#6158;&#8203;&#12288;&#8203;&nbsp;&#8202;&#8199;&#8192;&#10240;&#65279;&#6158;&#8203;&#12288;&#8203;&nbsp;&#8202;&#8199;&#8192;&#10240;&#65279;&#6158;&#8203;&#12288;&#847;&#828;&#1433;&#1858;&#5152;</title>
         <link href="/favicon.png" rel="icon" type="image/x-icon">
         <link rel="stylesheet" href="/style.css">
     </head>
 
     <body>
-            <a style="font-size: x-small; color:aquamarine" href="/other.html">Temp Nav</a>
+        <a style="font-size: x-small; color:aquamarine" href="/other.html">Temp Nav</a> <!--TEMPORARY REMOVE THIS LATER-->
 
         <div id="menu">
-            <p>This website requires JavaScript enabled to experience.</p>
+            <div class="javascript-disclaimer">This website requires JavaScript enabled to experience.</div>
+            <h1>Lacrimosa</h1>
             <script>
             let lacrimosa = "<h1>Lacrimosa</h1>";
-            fetch("/menu")
-                .then(res => res.text())
-                .then(html => {
-
-                    document.getElementById("menu").innerHTML = html + lacrimosa;
-                });
+            fetch("/menu").then(res => res.text()).then(html => {document.getElementById("menu").innerHTML = html + lacrimosa;});
             </script>
         </div>
     </body>

@@ -10,7 +10,7 @@
 }
 
 body {
-    font-size: 40px;
+    font-size: 24px;
     background-color: var(--bg);
     margin: 0;
     font-family: 'Trajan Pro', 'Trajan', serif;
@@ -26,12 +26,8 @@ h1 {
     align-items: center;
     pointer-events: none;
 
-    font-size: 5vw;
-    font-weight: 300;
+    font-size: 40px;
     letter-spacing: 0.22em;
-    opacity: 1;
-    transform: scale(1);
-    filter: blur(0px);
     transition: filter 0.5s ease, opacity 0.5s ease;
 
     animation: titleIntro 2.2s cubic-bezier(.65,.05,.36,1);
@@ -43,13 +39,34 @@ h1 {
 }
 
 .menu {
-    animation: menuBounce 0.8s ease-out;
-    animation-delay: 3s;
+    animation: menuBounce 0.8s ease-out 3s;
+}
+
+.javascript-disclaimer {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+    color: var(--fg);
+    opacity: 0;
+    transform: translateY(80px);
+    animation: javascript-disclaimer 5s ease 2.2s forwards;
+}
+
+@keyframes javascript-disclaimer {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+.javascript-disclaimer:focus-visible {
+    color: var(--bg);
 }
 
 @keyframes titleIntro {
     0% { opacity: 0; transform: scale(1.25); filter: blur(18px); letter-spacing: 0.4em; }
     55% { opacity: 1; }
     70% { filter: blur(0); }
-    100% { opacity: 1; transform: scale(1); filter: blur(0); letter-spacing: 0.22em; }
+    100% { transform: scale(1); letter-spacing: 0.22em; }
 }

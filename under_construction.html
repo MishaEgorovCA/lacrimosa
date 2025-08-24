@@ -33,15 +33,6 @@
         <h1>Under Construction</h1>
         <p>This page is currently under construction. Please check back soon!</p>
     </div>
-    <div id="menu">
-        <script>
-        fetch("/menu")
-            .then(res => res.text())
-            .then(html => {
-
-                document.getElementById("menu").innerHTML = html;
-            });
-        </script>
-    </div>
+    <div id="menu"><script>fetch("/menu").then(res => res.text()).then(html => {document.getElementById("menu").innerHTML = html;});</script></div>
 </body>
 </html>
