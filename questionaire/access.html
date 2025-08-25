@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<script type="module" src="/js/survey/api.js"></script>
 <title>Enter Code</title>
 <style>
 @font-face {
@@ -122,7 +123,8 @@ p {
 
 <div id="custom-cursor"></div>
 
-<script>
+<script type="module">
+  import * as api from "/js/survey/api.js";
 // Custom cursor
 const customCursor = document.getElementById('custom-cursor');
 document.addEventListener('mousemove', e => {
@@ -137,9 +139,14 @@ inputs.forEach((input, idx) => {
       if(idx < inputs.length - 1){
         inputs[idx + 1].focus();
       } else {
-        setTimeout(() => {
-          window.location.href = "intro.html";
-        }, 200);
+        let inputString = '';
+        inputs.forEach(i => inputString += i.value);
+        let intro = api.getIntro(inputString);
+        if (intro){
+          setTimeout(() => {
+            window.location.href = "intro.html";
+          }, 200);
+      }
       }
     }
   });

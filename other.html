@@ -10,5 +10,8 @@
         <a href="/preorder">Pre-Order</a>
         <a href="/payment/checkout.html">Payment</a>
         <a href="/questionaire/access.html">Questionaire</a>
+
+        <div id="menu"><script>fetch("/menu").then(res => res.text()).then(html => {document.getElementById("menu").innerHTML = html;});</script></div>
+
     </body>
     </html>
