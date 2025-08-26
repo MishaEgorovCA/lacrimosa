@@ -101,20 +101,30 @@ p {
 <body>
 
 <div class="container">
-  <h1>Hi Zbigniew,</h1>
+  <h1>Hi <span id="name">Zbigniew</span>,</h1>
 
-  <p>I think you have a strong sense for things that matter to me: quality, attention to detail, and design sensibility. I kindly ask you to take a few moments to answer the following questions. Your honest feedback is incredibly valuable and will help shape and improve what I'm creating. Every response counts, and your thoughtful input is greatly appreciated.</p>
-
-  <p>Thank you for your time.</p>
-
-  <p>— David</p>
+  <p id="message">I think you have a strong sense for things that matter to me: quality, attention to detail, and design sensibility. I kindly ask you to take a few moments to answer the following questions. Your honest feedback is incredibly valuable and will help shape and improve what I'm creating. Every response counts, and your thoughtful input is greatly appreciated.
+<br/>
+<br/>  Thank you for your time.
+<br/>
+<br/>  — David</p>
 
   <button class="continue-button" id="actionButton">Continue</button>
 </div>
 
 <div id="custom-cursor"></div>
 
-<script>
+<script type="module">
+import * as api from "/js/survey/api.js";
+
+const code = new URLSearchParams(window.location.search).get("code");
+
+api.getIntro(code).then(intro => {
+  document.getElementById("name").textContent = intro.name || "Error";
+  document.getElementById("message").textContent = intro.message || "Error";
+});
+
+
 // Custom cursor
 const customCursor = document.getElementById('custom-cursor');
 document.addEventListener('mousemove', e => {
@@ -124,13 +134,13 @@ document.addEventListener('mousemove', e => {
 // Continue button navigation
 const actionButton = document.getElementById("actionButton");
 actionButton.addEventListener("click", () => {
-  window.location.href = "survey.html";
+  window.location.href = "survey.html?code=" + code;
 });
 
 // Press Enter to navigate to survey.html
 document.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
-    window.location.href = "survey.html";
+    window.location.href = "survey.html?code=" + code;
   }
 });
 </script>

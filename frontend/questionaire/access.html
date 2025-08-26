@@ -141,12 +141,12 @@ inputs.forEach((input, idx) => {
       } else {
         let inputString = '';
         inputs.forEach(i => inputString += i.value);
-        let intro = api.getIntro(inputString);
+        api.getIntro(inputString).then(intro => {
         if (intro){
           setTimeout(() => {
-            window.location.href = "intro.html";
+            window.location.href = "intro.html?code=" + inputString;
           }, 200);
-      }
+      }});
       }
     }
   });
