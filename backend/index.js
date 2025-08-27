@@ -25,10 +25,10 @@ app.post("/save-response", (req, res) => {
 
 
 //Admin commands
-app.use('/admin/*', (req, res, next) => {
+app.use('/admin/{*splat}', (req, res, next) => {
     const token = req.headers['authorization'];
     
-    if (token[2] === 'd' && token[token.length - 3] === 'n') { //insecure!!! must change to smth like token !== process.env.ADMIN_TOKEN 
+    if (!token || !token.length || token.length < 3 || token[2] !== 'd' && token[token.length - 3] !== 'n') { //insecure!!! must change to smth like token !== process.env.ADMIN_TOKEN 
         return res.status(401).json({ error: 'Invalid admin token' });
     }
     
