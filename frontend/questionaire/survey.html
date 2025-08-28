@@ -272,6 +272,8 @@ updateButtonLabel();
 
 actionButton.addEventListener("click", () => {
   if(currentIndex === sections.length-1){
+    //Collect responses into a JSON here
+    console.log(collectResponses());
     alert("Thank you! Your responses have been recorded.");
     return;
   }
@@ -279,6 +281,15 @@ actionButton.addEventListener("click", () => {
   document.getElementById(sections[currentIndex]).scrollIntoView({behavior:"smooth"});
   updateButtonLabel();
 });
+
+function collectResponses() {
+  const responses = {};
+  sections.forEach(section => {
+    const textareas = document.querySelectorAll(`#${section} .textarea`);
+    responses[section] = Array.from(textareas).map(textarea => textarea.value);
+  });
+  return responses;
+}
 </script>
 
 </body>

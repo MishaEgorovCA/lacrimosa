@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Panel — Lacrimosa Surveys</title>
+  <style>
+    :root{
+      --bg:#ffffff; --fg:#111; --muted:#666; --accent:#111; --border:#e6e6e6;
+      --ok:#0a7; --err:#c00; --card:#fafafa;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; background:var(--bg); color:var(--fg)}
+    header{position:sticky; top:0; background:#fff; border-bottom:1px solid var(--border); padding:14px 18px; z-index:10; display:flex; gap:12px; align-items:center; flex-wrap:wrap}
+    header h1{font-size:16px; letter-spacing:.08em; font-weight:600; margin:0 10px 0 0}
+
+    .row{display:flex; gap:16px; align-items:center; flex-wrap:wrap}
+    .spacer{flex:1}
+
+    input[type="text"], textarea{border:1px solid var(--border); padding:10px 12px; border-radius:8px; font-size:14px; width:100%; background:#fff; color:var(--fg)}
+    textarea{min-height:90px; resize:vertical}
+    label{font-size:12px; color:var(--muted); display:block; margin-bottom:6px}
+
+    button{background:var(--accent); color:#fff; border:0; padding:10px 14px; border-radius:8px; cursor:pointer; font-size:14px}
+    button.secondary{background:#f2f2f2; color:#111}
+    button.ghost{background:transparent; color:var(--accent); border:1px solid var(--border)}
+    button:disabled{opacity:.5; cursor:not-allowed}
+
+    main{padding:20px; display:grid; grid-template-columns:repeat(12,1fr); gap:20px; max-width:1200px; margin:0 auto}
+    .card{grid-column: span 12; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px}
+    .card h2{margin:0 0 12px 0; font-size:14px; letter-spacing:.06em}
+
+    .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+    .grid-3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px}
+
+    .status{font-size:12px; margin-left:8px}
+    .status.ok{color:var(--ok)}
+    .status.err{color:var(--err)}
+
+    table{width:100%; border-collapse:collapse; font-size:14px}
+    thead th{position:sticky; top:0; background:#fff; z-index:1}
+    th, td{border-bottom:1px solid var(--border); padding:10px; vertical-align:top; text-align:left}
+
+    details{border:1px solid var(--border); border-radius:8px; padding:8px 10px; background:#fff}
+    details + details{margin-top:8px}
+    summary{cursor:pointer; font-weight:600}
+    .section{margin:6px 0}
+    .section h4{margin:4px 0; font-size:13px; color:#222}
+    .answers{margin:0; padding-left:18px; color:#333}
+
+    .token{min-width:280px}
+    .monospace{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+    .right{ text-align:right }
+
+    .toast{position:fixed; bottom:18px; right:18px; background:#111; color:#fff; padding:10px 14px; border-radius:10px; opacity:0; transform:translateY(8px); transition:opacity .25s, transform .25s}
+    .toast.show{opacity:1; transform:translateY(0)}
+
+    .icon-btn{ background:transparent; border:1px solid var(--border); color:#333; padding:6px 8px; border-radius:8px; display:inline-flex; align-items:center; gap:6px; cursor:pointer }
+    .icon-btn:hover{ background:#f6f6f6 }
+    .icon-btn.danger{ border-color:#ffdbdb; color:#a30 }
+    .icon-btn.danger:hover{ background:#ffeeee }
+    .icon{ width:16px; height:16px; display:inline-block; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Admin</h1>
+    <div class="row">
+      <label for="token" style="margin:0">Auth token</label>
+      <input id="token" class="token monospace" type="text" placeholder="Enter admin token" />
+      <button id="saveToken" class="ghost" title="Save token to this browser">Save</button>
+      <span id="tokenStatus" class="status"></span>
+    </div>
+    <div class="spacer"></div>
+    <div class="row">
+      <button id="refresh" class="secondary">Refresh</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="card" id="addCard">
+      <h2>Add survey</h2>
+      <div class="grid-3">
+        <div>
+          <label>Username</label>
+          <input id="username" type="text" placeholder="e.g. Alice" />
+        </div>
+        <div>
+          <label>Code</label>
+          <div class="row">
+            <input id="code" type="text" class="monospace" placeholder="6-digit code" />
+            <button id="genCode" class="secondary" title="Generate unique code">Generate</button>
+          </div>
+        </div>
+        <div></div>
+        <div style="grid-column: span 3">
+          <label>Message (shown to user)</label>
+          <textarea id="message" placeholder="Message to participant..."></textarea>
+        </div>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button id="addBtn">Add</button>
+        <span id="addStatus" class="status"></span>
+      </div>
+    </section>
+
+    <section class="card" id="removeCard" hidden>
+      <!-- deprecated by per-row actions -->
+    </section>
+
+    <section class="card" id="listCard">
+      <h2>Responses</h2>
+      <div id="listStatus" class="status"></div>
+      <div style="max-height:60vh; overflow:auto; border:1px solid var(--border); border-radius:10px">
+        <table>
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>User</th>
+              <th>Message</th>
+              <th>Response</th>
+              <th class="right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const $ = (q, el=document) => el.querySelector(q);
+    const rowsEl = $('#rows');
+    const listStatus = $('#listStatus');
+    const tokenInput = $('#token');
+    const tokenStatus = $('#tokenStatus');
+
+    function toast(msg){
+      const t = $('#toast');
+      t.textContent = msg; t.classList.add('show');
+      clearTimeout(t._tid); t._tid = setTimeout(()=>t.classList.remove('show'), 2000);
+    }
+
+    function getToken(){ return tokenInput.value.trim(); }
+    function setSavedTokenStatus(ok){
+      tokenStatus.textContent = ok ? 'token saved' : '';
+      tokenStatus.className = 'status ' + (ok ? 'ok':'');
+    }
+
+    function adminFetch(path, body){
+      const headers = { 'Content-Type':'application/json' };
+      const token = getToken();
+      if (token) headers['Authorization'] = token;
+      return fetch(path, { method:'POST', headers, body: JSON.stringify(body || {}) })
+        .then(async res => {
+          const data = await res.json().catch(()=>({}));
+          if (!res.ok) throw Object.assign(new Error(data.error || 'Request failed'), { detail: data });
+          return data;
+        });
+    }
+
+    function sectionOrder(){
+      return ['perception','sensory','design','proportion','function','comfort','lifestyle','value','feedback'];
+    }
+
+    function renderResponseCell(resp){
+      if (!resp) return '<span class="status">No response</span>';
+      try{ if (typeof resp === 'string') resp = JSON.parse(resp); }catch(e){ /* keep raw */ }
+      if (typeof resp !== 'object' || Array.isArray(resp)){
+        return `<pre class="monospace" style="white-space:pre-wrap; margin:0">${String(resp)}</pre>`;
+      }
+      const order = sectionOrder();
+      const frag = document.createDocumentFragment();
+      order.forEach(key => {
+        if (!(key in resp)) return;
+        const sec = document.createElement('details');
+        const has = Array.isArray(resp[key]) ? resp[key].filter(v=>String(v).trim().length>0) : [];
+        sec.open = false;
+        sec.innerHTML = `<summary>${key}</summary>` + (has.length
+          ? `<div class="section"><ol class="answers">${has.map(v=>`<li>${escapeHtml(v)}</li>`).join('')}</ol></div>`
+          : `<div class="section"><em class="status">empty</em></div>`);
+        frag.appendChild(sec);
+      });
+      const tmp = document.createElement('div'); tmp.appendChild(frag);
+      return tmp.innerHTML || '<span class="status">No sections</span>';
+    }
+
+    function escapeHtml(s){
+      return String(s)
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'",'&#39;');
+    }
+
+    function actionCell(code){
+      return `
+        <button class="icon-btn danger" data-action="delete" data-code="${escapeHtml(code)}" title="Delete survey">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+            <path d="M10 11v6"></path>
+            <path d="M14 11v6"></path>
+            <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"></path>
+          </svg>
+          Remove
+        </button>`;
+    }
+
+    async function refreshList(){
+      listStatus.textContent = 'Loading...'; listStatus.className='status';
+      rowsEl.innerHTML = '';
+      try{
+        const rows = await adminFetch('/admin/list-responses');
+        if (!Array.isArray(rows) || rows.length === 0){
+          listStatus.textContent = 'No records'; return;
+        }
+        const frag = document.createDocumentFragment();
+        for (const r of rows){
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="monospace">${escapeHtml(r.code)}</td>
+            <td>${escapeHtml(r.username ?? '')}</td>
+            <td>${escapeHtml(r.message ?? '')}</td>
+            <td>${renderResponseCell(r.response)}</td>
+            <td class="right">${actionCell(r.code ?? '')}</td>
+          `;
+          frag.appendChild(tr);
+        }
+        rowsEl.appendChild(frag);
+        listStatus.textContent = `${rows.length} record(s)`; listStatus.className='status ok';
+      }catch(err){
+        listStatus.textContent = err.message || 'Failed to load'; listStatus.className='status err';
+      }
+    }
+
+    // Delegated row actions
+    rowsEl.addEventListener('click', async (e)=>{
+      const btn = e.target.closest('button[data-action]');
+      if (!btn) return;
+      const action = btn.getAttribute('data-action');
+      const code = btn.getAttribute('data-code');
+      if (action === 'delete'){
+        if (!code) return;
+        if (!confirm(`Remove survey ${code}?`)) return;
+        btn.disabled = true;
+        try{
+          await adminFetch('/admin/remove-survey', { code });
+          toast('Survey removed');
+          // Remove row from DOM
+          const row = btn.closest('tr');
+          if (row) row.remove();
+        }catch(err){ toast(err.message || 'Failed to remove'); }
+        finally{ btn.disabled = false; }
+      }
+    });
+
+    // Add survey handlers
+    $('#genCode').addEventListener('click', async ()=>{
+      const btn = $('#genCode'); btn.disabled = true; const s = $('#addStatus'); s.textContent='';
+      try{
+        const { code } = await adminFetch('/admin/generate-unique-code');
+        $('#code').value = code || '';
+      }catch(err){ toast(err.message || 'Failed to generate code'); }
+      finally{ btn.disabled = false; }
+    });
+
+    $('#addBtn').addEventListener('click', async ()=>{
+      const username = $('#username').value.trim();
+      const message = $('#message').value.trim();
+      const code = $('#code').value.trim();
+      const s = $('#addStatus'); s.textContent=''; s.className='status';
+      if (!username || !message || !code){ s.textContent='Please fill username, message and code'; s.className='status err'; return; }
+      try{
+        await adminFetch('/admin/add-survey', { username, message, code });
+        s.textContent='Added'; s.className='status ok'; toast('Survey added');
+        await refreshList();
+      }catch(err){
+        const msg = (err.detail && err.detail.error && /UNIQUE|constraint/i.test(err.detail.error))
+          ? 'Code already exists'
+          : (err.message || 'Failed to add');
+        s.textContent = msg; s.className='status err';
+      }
+    });
+
+    // Token persistence
+    $('#saveToken').addEventListener('click', ()=>{
+      const token = getToken();
+      if (!token){ setSavedTokenStatus(false); toast('Token cleared'); localStorage.removeItem('adminToken'); return; }
+      localStorage.setItem('adminToken', token);
+      setSavedTokenStatus(true); toast('Token saved');
+    });
+
+    $('#refresh').addEventListener('click', refreshList);
+
+    // Init
+    (function init(){
+      const saved = localStorage.getItem('adminToken');
+      if (saved){ tokenInput.value = saved; setSavedTokenStatus(true); }
+      refreshList();
+    })();
+  </script>
+</body>
+</html>
