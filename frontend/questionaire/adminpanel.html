@@ -42,12 +42,22 @@
     thead th{position:sticky; top:0; background:#fff; z-index:1}
     th, td{border-bottom:1px solid var(--border); padding:10px; vertical-align:top; text-align:left}
 
-    details{border:1px solid var(--border); border-radius:8px; padding:8px 10px; background:#fff}
-    details + details{margin-top:8px}
-    summary{cursor:pointer; font-weight:600}
-    .section{margin:6px 0}
-    .section h4{margin:4px 0; font-size:13px; color:#222}
-    .answers{margin:0; padding-left:18px; color:#333}
+    /* Ensure consistent sizing for user/message cells */
+    td.col-user, td.col-message, th.col-user, th.col-message{ font-size:14px; line-height:1.5; font-weight:400 }
+
+    /* Modal for responses */
+    .modal{ position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; z-index:9999 }
+    .modal.show{ display:flex }
+    .modal-card{ width:min(1000px, 92vw); height:min(86vh, 900px); background:#fff; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,.2); display:flex; flex-direction:column; overflow:hidden }
+    .modal-header{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 14px; border-bottom:1px solid var(--border) }
+    .modal-title{ margin:0; font-size:14px; letter-spacing:.06em }
+    .modal-body{ padding:14px; overflow:auto }
+    .close-btn{ background:#f3f3f3; color:#111; border:1px solid var(--border); padding:8px 10px; border-radius:8px; cursor:pointer }
+
+    .resp-sec{ border:1px solid var(--border); border-radius:10px; padding:10px 12px; background:#fff; }
+    .resp-sec + .resp-sec{ margin-top:10px }
+    .resp-sec h3{ margin:0 0 6px 0; font-size:13px; letter-spacing:.04em }
+    .resp-sec ol{ margin:0; padding-left:18px; }
 
     .token{min-width:280px}
     .monospace{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
@@ -60,6 +70,7 @@
     .icon-btn:hover{ background:#f6f6f6 }
     .icon-btn.danger{ border-color:#ffdbdb; color:#a30 }
     .icon-btn.danger:hover{ background:#ffeeee }
+    .icon-btn.primary{ border-color:var(--border); color:#111 }
     .icon{ width:16px; height:16px; display:inline-block; }
 
     /* Collapsible auth row */
@@ -132,9 +143,8 @@
           <thead>
             <tr>
               <th>Code</th>
-              <th>User</th>
-              <th>Message</th>
-              <th>Response</th>
+              <th class="col-user">User</th>
+              <th class="col-message">Message</th>
               <th class="right">Actions</th>
             </tr>
           </thead>
@@ -143,6 +153,19 @@
       </div>
     </section>
   </main>
+
+  <!-- Response Modal -->
+  <div id="respModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-card" role="document">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle">Response</h3>
+        <div style="display:flex; gap:8px; align-items:center">
+          <button id="closeModal" class="close-btn">Close</button>
+        </div>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
@@ -154,6 +177,13 @@
     const tokenStatus = $('#tokenStatus');
     const authWrap = $('#authWrap');
     const toggleAuthBtn = $('#toggleAuth');
+
+    const respModal = $('#respModal');
+    const modalTitle = $('#modalTitle');
+    const modalBody = $('#modalBody');
+    const closeModalBtn = $('#closeModal');
+
+    const responseMap = new Map();
 
     function toast(msg){
       const t = $('#toast');
@@ -190,28 +220,6 @@
       return ['perception','sensory','design','proportion','function','comfort','lifestyle','value','feedback'];
     }
 
-    function renderResponseCell(resp){
-      if (!resp) return '<span class="status">No response</span>';
-      try{ if (typeof resp === 'string') resp = JSON.parse(resp); }catch(e){ /* keep raw */ }
-      if (typeof resp !== 'object' || Array.isArray(resp)){
-        return `<pre class="monospace" style="white-space:pre-wrap; margin:0">${String(resp)}</pre>`;
-      }
-      const order = sectionOrder();
-      const frag = document.createDocumentFragment();
-      order.forEach(key => {
-        if (!(key in resp)) return;
-        const sec = document.createElement('details');
-        const has = Array.isArray(resp[key]) ? resp[key].filter(v=>String(v).trim().length>0) : [];
-        sec.open = false;
-        sec.innerHTML = `<summary>${key}</summary>` + (has.length
-          ? `<div class="section"><ol class="answers">${has.map(v=>`<li>${escapeHtml(v)}</li>`).join('')}</ol></div>`
-          : `<div class="section"><em class="status">empty</em></div>`);
-        frag.appendChild(sec);
-      });
-      const tmp = document.createElement('div'); tmp.appendChild(frag);
-      return tmp.innerHTML || '<span class="status">No sections</span>';
-    }
-
     function escapeHtml(s){
       return String(s)
         .replaceAll('&','&amp;')
@@ -221,45 +229,77 @@
         .replaceAll("'",'&#39;');
     }
 
+    function renderResponseFull(resp){
+      if (!resp) return '<em class="status">No response</em>';
+      try{ if (typeof resp === 'string') resp = JSON.parse(resp); }catch(e){}
+      if (!resp || typeof resp !== 'object') return `<pre class="monospace" style="white-space:pre-wrap; margin:0">${escapeHtml(String(resp))}</pre>`;
+      const order = sectionOrder();
+      const parts = [];
+      for (const key of order){
+        if (!Array.isArray(resp[key])) continue;
+        const items = resp[key].filter(v => String(v).trim().length>0).map(v=>`<li>${escapeHtml(v)}</li>`).join('');
+        parts.push(`<div class="resp-sec"><h3>${escapeHtml(key)}</h3>${items ? `<ol>${items}</ol>` : '<em class="status">empty</em>'}</div>`);
+      }
+      return parts.join('') || '<em class="status">No sections</em>';
+    }
+
     function actionCell(code){
       return `
-        <button class="icon-btn danger" data-action="delete" data-code="${escapeHtml(code)}" title="Delete survey">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <polyline points="3 6 5 6 21 6"></polyline>
-            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
-            <path d="M10 11v6"></path>
-            <path d="M14 11v6"></path>
-            <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"></path>
-          </svg>
-          Remove
-        </button>`;
+        <div style="display:flex; gap:8px; justify-content:flex-end">
+          <button class="icon-btn primary" data-action="view" data-code="${escapeHtml(code)}" title="Show response">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            Show
+          </button>
+          <button class="icon-btn danger" data-action="delete" data-code="${escapeHtml(code)}" title="Delete survey">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+              <path d="M10 11v6"></path>
+              <path d="M14 11v6"></path>
+              <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            Remove
+          </button>
+        </div>`;
     }
 
     async function refreshList(){
       listStatus.textContent = 'Loading...'; listStatus.className='status';
       rowsEl.innerHTML = '';
+      responseMap.clear();
       try{
         const rows = await adminFetch('/api/admin/list-responses');
-        if (!Array.isArray(rows) || rows.length === 0){
-          listStatus.textContent = 'No records'; return;
-        }
+        if (!Array.isArray(rows) || rows.length === 0){ listStatus.textContent = 'No records'; return; }
         const frag = document.createDocumentFragment();
         for (const r of rows){
+          responseMap.set(r.code, r.response);
           const tr = document.createElement('tr');
           tr.innerHTML = `
             <td class="monospace">${escapeHtml(r.code)}</td>
-            <td>${escapeHtml(r.username ?? '')}</td>
-            <td>${escapeHtml(r.message ?? '')}</td>
-            <td>${renderResponseCell(r.response)}</td>
+            <td class="col-user">${escapeHtml(r.username ?? '')}</td>
+            <td class="col-message">${escapeHtml(r.message ?? '')}</td>
             <td class="right">${actionCell(r.code ?? '')}</td>
           `;
           frag.appendChild(tr);
         }
         rowsEl.appendChild(frag);
         listStatus.textContent = `${rows.length} record(s)`; listStatus.className='status ok';
-      }catch(err){
-        listStatus.textContent = err.message || 'Failed to load'; listStatus.className='status err';
-      }
+      }catch(err){ listStatus.textContent = err.message || 'Failed to load'; listStatus.className='status err'; }
+    }
+
+    function openModalFor(code){
+      const resp = responseMap.get(code);
+      modalTitle.textContent = `Response — ${code}`;
+      modalBody.innerHTML = renderResponseFull(resp);
+      respModal.classList.add('show');
+      respModal.setAttribute('aria-hidden','false');
+    }
+    function closeModal(){
+      respModal.classList.remove('show');
+      respModal.setAttribute('aria-hidden','true');
     }
 
     // Delegated row actions
@@ -268,6 +308,10 @@
       if (!btn) return;
       const action = btn.getAttribute('data-action');
       const code = btn.getAttribute('data-code');
+      if (action === 'view'){
+        openModalFor(code);
+        return;
+      }
       if (action === 'delete'){
         if (!code) return;
         if (!confirm(`Remove survey ${code}?`)) return;
@@ -275,13 +319,16 @@
         try{
           await adminFetch('/api/admin/remove-survey', { code });
           toast('Survey removed');
-          // Remove row from DOM
-          const row = btn.closest('tr');
-          if (row) row.remove();
+          const row = btn.closest('tr'); if (row) row.remove();
         }catch(err){ toast(err.message || 'Failed to remove'); }
         finally{ btn.disabled = false; }
       }
     });
+
+    // Modal close handlers
+    closeModalBtn.addEventListener('click', closeModal);
+    respModal.addEventListener('click', (e)=>{ if (e.target === respModal) closeModal(); });
+    document.addEventListener('keydown', (e)=>{ if (e.key === 'Escape' && respModal.classList.contains('show')) closeModal(); });
 
     // Add survey handlers
     $('#genCode').addEventListener('click', async ()=>{
