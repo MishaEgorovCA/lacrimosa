@@ -283,7 +283,7 @@ actionButton.addEventListener("click", () => {
   });
 });*/
     const code = new URLSearchParams(window.location.search).get("code") || "";
-    fetch("/save-response", {
+    fetch("/api/save-response", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ code, response: collectResponses() })
