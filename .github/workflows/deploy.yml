@@ -24,5 +24,5 @@ jobs:
             cd /var/www/lacrimosa &&
             git fetch origin dev &&
             git reset --hard origin/dev &&
-            systemctl --user restart lacrimosa-backend
+            sudo systemctl restart lacrimosa-backend
           "
