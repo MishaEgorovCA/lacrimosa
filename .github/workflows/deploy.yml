@@ -23,5 +23,6 @@ jobs:
           ssh -o StrictHostKeyChecking=no deploy@${{ secrets.SERVER_IP }} "
             cd /var/www/lacrimosa &&
             git fetch origin dev &&
-            git reset --hard origin/dev
+            git reset --hard origin/dev &&
+            systemctl restart lacrimosa-backend
           "
