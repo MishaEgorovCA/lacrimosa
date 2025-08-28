@@ -120,8 +120,9 @@ import * as api from "/js/survey/api.js";
 const code = new URLSearchParams(window.location.search).get("code");
 
 api.getIntro(code).then(intro => {
-  document.getElementById("name").textContent = intro.name || "Error";
-  document.getElementById("message").textContent = intro.message || "Error";
+  document.getElementById("name").textContent = intro?.name || "Error in server response";
+  document.getElementById("message").textContent = intro?.message || "Error in server response";
+  document.getElementById("message").setAttribute('style', 'white-space: pre-wrap;');
 });
 
 
