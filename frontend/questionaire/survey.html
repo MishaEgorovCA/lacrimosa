@@ -274,7 +274,31 @@ actionButton.addEventListener("click", () => {
   if(currentIndex === sections.length-1){
     //Collect responses into a JSON here
     console.log(collectResponses());
-    alert("Thank you! Your responses have been recorded.");
+    // Send the JSON to your server or process it as needed
+    /*app.post("/save-response", (req, res) => {
+  const { code, response } = req.body;
+  db.run("UPDATE surveys SET response = ? WHERE code = ?", [JSON.stringify(response), code], (err) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ success: true });
+  });
+});*/
+    const code = new URLSearchParams(window.location.search).get("code") || "";
+    fetch("/save-response", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code, response: collectResponses() })
+    })
+    .then(res => res.ok ? res.json() : Promise.reject(res))
+    .then(data => {
+      if (data.success) {
+        alert("Thank you! Your response has been submitted.");
+      } else {
+        alert("Submission failed. Please try again.");
+      }
+    })
+    .catch(() => {
+      alert("Submission failed. Please try again.");
+    });
     return;
   }
   currentIndex++;
