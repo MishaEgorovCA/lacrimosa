@@ -80,7 +80,7 @@
     .tiny{ padding:6px 10px; font-size:12px }
     .icon-inline{ width:14px; height:14px; vertical-align:-2px; margin-right:6px }
 
-    .badge{ display:inline-block; padding:4px 8px; border-radius:999px; font-size:12px; line-height:1; border:1px solid var(--border); }
+    .badge{ display:inline-flex; align-items:center; padding:4px 8px; border-radius:999px; font-size:12px; line-height:1; border:1px solid var(--border); }
     .badge.muted{ background:#f6f6f6; color:#888; }
   </style>
 </head>
@@ -267,7 +267,7 @@
               <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path>
               <circle cx="12" cy="12" r="3"></circle>
             </svg>
-            Show response
+            Response
           </button>` : `<span class="badge muted" title="No response submitted yet">No response</span>`;
       return `
         <div style="display:flex; gap:8px; justify-content:flex-end">
