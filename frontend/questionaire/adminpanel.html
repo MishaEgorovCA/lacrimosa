@@ -215,7 +215,7 @@
       listStatus.textContent = 'Loading...'; listStatus.className='status';
       rowsEl.innerHTML = '';
       try{
-        const rows = await adminFetch('/admin/list-responses');
+        const rows = await adminFetch('/api/admin/list-responses');
         if (!Array.isArray(rows) || rows.length === 0){
           listStatus.textContent = 'No records'; return;
         }
@@ -249,7 +249,7 @@
         if (!confirm(`Remove survey ${code}?`)) return;
         btn.disabled = true;
         try{
-          await adminFetch('/admin/remove-survey', { code });
+          await adminFetch('/api/admin/remove-survey', { code });
           toast('Survey removed');
           // Remove row from DOM
           const row = btn.closest('tr');
@@ -263,7 +263,7 @@
     $('#genCode').addEventListener('click', async ()=>{
       const btn = $('#genCode'); btn.disabled = true; const s = $('#addStatus'); s.textContent='';
       try{
-        const { code } = await adminFetch('/admin/generate-unique-code');
+        const { code } = await adminFetch('/api/admin/generate-unique-code');
         $('#code').value = code || '';
       }catch(err){ toast(err.message || 'Failed to generate code'); }
       finally{ btn.disabled = false; }
@@ -276,7 +276,7 @@
       const s = $('#addStatus'); s.textContent=''; s.className='status';
       if (!username || !message || !code){ s.textContent='Please fill username, message and code'; s.className='status err'; return; }
       try{
-        await adminFetch('/admin/add-survey', { username, message, code });
+        await adminFetch('/api/admin/add-survey', { username, message, code });
         s.textContent='Added'; s.className='status ok'; toast('Survey added');
         await refreshList();
       }catch(err){
