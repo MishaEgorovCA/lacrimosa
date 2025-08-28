@@ -499,8 +499,8 @@ function submit() {
     function collectResponses() {
         const responses = {};
         sections.forEach(section => {
-            const textareas = document.querySelectorAll(`#${section} .textarea`);
-            responses[section] = Array.from(textareas).map(textarea => textarea.value);
+            const textareas = document.querySelectorAll(`#${section.id} .textarea`);
+            responses[section.id] = Array.from(textareas).map(textarea => textarea.value);
         });
         return responses;
     }
