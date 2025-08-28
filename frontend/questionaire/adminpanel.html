@@ -79,6 +79,9 @@
 
     .tiny{ padding:6px 10px; font-size:12px }
     .icon-inline{ width:14px; height:14px; vertical-align:-2px; margin-right:6px }
+
+    .badge{ display:inline-block; padding:4px 8px; border-radius:999px; font-size:12px; line-height:1; border:1px solid var(--border); }
+    .badge.muted{ background:#f6f6f6; color:#888; }
   </style>
 </head>
 <body>
@@ -243,16 +246,32 @@
       return parts.join('') || '<em class="status">No sections</em>';
     }
 
-    function actionCell(code){
-      return `
-        <div style="display:flex; gap:8px; justify-content:flex-end">
+    function hasNonEmptyResponse(resp){
+      if (!resp) return false;
+      try { if (typeof resp === 'string') resp = JSON.parse(resp); } catch(e) {}
+      if (!resp) return false;
+      if (typeof resp !== 'object') return String(resp).trim().length > 0;
+      const order = sectionOrder();
+      for (const key of order){
+        const arr = resp[key];
+        if (Array.isArray(arr) && arr.some(v => String(v).trim().length > 0)) return true;
+      }
+      // If object has any other non-empty primitive
+      return Object.values(resp).some(v => Array.isArray(v) ? v.some(x=>String(x).trim().length>0) : String(v ?? '').trim().length>0);
+    }
+
+    function actionCell(code, canShow){
+      const showBtn = canShow ? `
           <button class="icon-btn primary" data-action="view" data-code="${escapeHtml(code)}" title="Show response">
             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path>
               <circle cx="12" cy="12" r="3"></circle>
             </svg>
-            Show
-          </button>
+            Show response
+          </button>` : `<span class="badge muted" title="No response submitted yet">No response</span>`;
+      return `
+        <div style="display:flex; gap:8px; justify-content:flex-end">
+          ${showBtn}
           <button class="icon-btn danger" data-action="delete" data-code="${escapeHtml(code)}" title="Delete survey">
             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <polyline points="3 6 5 6 21 6"></polyline>
@@ -276,12 +295,13 @@
         const frag = document.createDocumentFragment();
         for (const r of rows){
           responseMap.set(r.code, r.response);
+          const canShow = hasNonEmptyResponse(r.response);
           const tr = document.createElement('tr');
           tr.innerHTML = `
             <td class="monospace">${escapeHtml(r.code)}</td>
             <td class="col-user">${escapeHtml(r.username ?? '')}</td>
             <td class="col-message">${escapeHtml(r.message ?? '')}</td>
-            <td class="right">${actionCell(r.code ?? '')}</td>
+            <td class="right">${actionCell(r.code ?? '', canShow)}</td>
           `;
           frag.appendChild(tr);
         }
