@@ -5,11 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Briefing</title>
 <style>
+/* Typeface */
 @font-face {
   font-family: 'Trajan';
   src: local('Trajan Pro'), local('Trajan'), serif;
 }
 
+/* Base layout */
 html, body {
   height: 100%;
   margin: 0;
@@ -17,8 +19,8 @@ html, body {
   font-family: 'Trajan', serif;
   font-weight: 200;
   font-size: 17px;
- text-shadow: 0px 2px 4px rgba(0,0,0,0.09); /* 9% shadow */
-  color: #4d4d4d; /* 70% black */
+  text-shadow: 0px 2px 4px rgba(0,0,0,0.09);
+  color: #4d4d4d;
   cursor: none;
   scroll-behavior: smooth;
   display: flex;
@@ -26,13 +28,17 @@ html, body {
   align-items: center;
   padding: 50px;
   box-sizing: border-box;
+  position: relative;
 }
 
-/* subtle vignette */
+/* Kill the OS cursor everywhere */
+*, *::before, *::after { cursor: none !important; }
+
+/* Subtle vignette */
 body::before {
   content: "";
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
+  inset: 0;
   pointer-events: none;
   background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.035) 100%);
   z-index: 1;
@@ -42,8 +48,8 @@ body::before {
 body::after {
   content: "";
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-color: rgba(246,239,229,0.17); /* 17% opacity */
+  inset: 0;
+  background-color: rgba(246,239,229,0.17);
   mix-blend-mode: darken;
   pointer-events: none;
   z-index: 2;
@@ -58,7 +64,7 @@ h1 {
   font-family: 'Trajan', serif;
   font-size: 27px;
   font-weight: 200;
-  letter-spacing: 0.09em; /* 9% tracking */
+  letter-spacing: 0.09em;
   margin-bottom: 50px;
 }
 
@@ -66,35 +72,79 @@ p {
   font-family: 'Trajan', serif;
   font-size: 17px;
   line-height: 1.8;
-  letter-spacing: 0.09em; /* 9% tracking */
+  letter-spacing: 0.09em;
   margin-bottom: 20px;
-  color: #4d4d4d; /* 70% black */
+  color: #4d4d4d;
   font-style: italic;
 }
 
+/* === Button (saved prefs) === */
 .continue-button {
+  position: relative;
+  display: inline-block;
   font-family: 'Trajan', serif;
-  font-size: 17px;
-  font-weight: 200;
-  letter-spacing: 0.09em;
-  color: #4d4d4d; /* 70% black */
+  font-size: 14.5px;
+  font-weight: 300;
+  letter-spacing: 0.22em;
+  color: #4d4d4d;
   background: none;
   border: none;
-  cursor: none;
-  padding: 10px 0;
-  margin-top: 40px; /* extra space after name */
+  padding: 8px 16px;
+  margin-top: 40px;
+  text-transform: none;
+  outline: none;
+  user-select: none;
+  z-index: 3;
 }
 
+/* The frosted “squircle” */
+.continue-button .squircle {
+  position: absolute;
+  inset: -6px -10px;
+  background: rgba(0,0,0,0.02);
+  border-radius: 10px;
+  opacity: 0;
+  transform: scale(0.85);
+  transform-origin: 50% 50%;
+  transition:
+    opacity 222ms cubic-bezier(.2,.8,.2,1),
+    transform 222ms cubic-bezier(.2,.8,.2,1),
+    background-color 222ms ease;
+  z-index: -1;
+  pointer-events: none;
+
+  -webkit-backdrop-filter: blur(100px);
+          backdrop-filter: blur(100px);
+}
+
+/* Hover/magnet (enter/exit identical) */
+.continue-button.active .squircle {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Press: shrink 15% & lighten 50% */
+.continue-button.active.pressed .squircle {
+  transform: scale(0.85);
+  background: rgba(0,0,0,0.01);
+}
+
+/* === Custom cursor: single fill-only circle === */
 #custom-cursor {
   position: fixed;
   top: 0; left: 0;
-  width: 34px; height: 34px;
+  width: 28px; height: 28px;
   border-radius: 50%;
   pointer-events: none;
-  background-color: rgba(0,0,0,0.05);
+  background-color: rgba(0,0,0,0.08);
   transform: translate(-50%, -50%);
-  transition: background-color 0.3s, width 0.3s, height 0.3s, opacity 0.2s;
+  transition:
+    opacity 222ms ease,
+    width 140ms ease,
+    height 140ms ease,
+    background-color 160ms ease;
   z-index: 9999;
+  opacity: 1;
 }
 </style>
 </head>
@@ -105,7 +155,10 @@ p {
 
   <p id="message"></p>
 
-  <button class="continue-button" id="actionButton">Continue</button>
+  <button class="continue-button" id="actionButton">
+    Next
+    <span class="squircle" aria-hidden="true"></span>
+  </button>
 </div>
 
 <div id="custom-cursor"></div>
@@ -122,23 +175,166 @@ api.getIntro(code).then(intro => {
 });
 
 
-// Custom cursor
-const customCursor = document.getElementById('custom-cursor');
-document.addEventListener('mousemove', e => {
-  customCursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`;
-});
+/* ====== CONFIG ====== */
+const FADE_DURATION_MS = 222;
+const baseFollow = 0.16;
+const snapFollow = 0.55;
+const magnetRadius = 122;
+const fullLockRadius = 60;
+const magnetBoost = 2.6;
+const idleDelay = 500;
+const speedHideThreshold = 0.12;
 
-// Continue button navigation
-const actionButton = document.getElementById("actionButton");
-actionButton.addEventListener("click", () => {
+/* ====== Elements ====== */
+const cursor = document.getElementById('custom-cursor');
+const btn = document.getElementById('actionButton');
+
+/* ====== State ====== */
+let mouseX = innerWidth / 2, mouseY = innerHeight / 2;
+let cx = mouseX, cy = mouseY;
+let lastMoveAt = performance.now();
+let armed = false; // remembers if press began while button was selected (active)
+
+/* ====== Helpers ====== */
+const dist = (x1,y1,x2,y2) => Math.hypot(x2 - x1, y2 - y1);
+const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+const lerp = (a,b,t) => a + (b - a) * t;
+const easeOutQuint = t => 1 - Math.pow(1 - t, 5);
+
+/* Navigation handler (single source of truth) */
+function navigate() {
   window.location.href = "survey.html?code=" + code;
+}
+
+/* Track mouse */
+document.addEventListener('mousemove', (e) => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+  lastMoveAt = performance.now();
+}, { passive: true });
+
+/* Press handling (global): if button is selected (active) when you press,
+   we arm the click and shrink/lighten the squircle. */
+window.addEventListener('pointerdown', () => {
+  if (btn.classList.contains('active')) {
+    btn.classList.add('pressed');
+    armed = true; // press started while selected — treat as a click regardless of pointer position
+  }
 });
 
-// Press Enter to navigate to survey.html
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    window.location.href = "survey.html?code=" + code;
+/* Release anywhere: if armed, it's a click (even if pointer moved away). */
+window.addEventListener('pointerup', () => {
+  if (armed) {
+    armed = false;
+    btn.classList.remove('pressed');
+    navigate();
+  } else {
+    btn.classList.remove('pressed');
   }
+});
+
+window.addEventListener('pointercancel', () => {
+  armed = false;
+  btn.classList.remove('pressed');
+});
+window.addEventListener('blur', () => {
+  armed = false;
+  btn.classList.remove('pressed');
+});
+
+/* Keyboard: Enter still navigates; Space simulates press/click too. */
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') navigate();
+  if (e.key === ' ' || e.code === 'Space') {
+    // mimic press when active; on keyup, trigger navigate
+    if (btn.classList.contains('active')) {
+      btn.classList.add('pressed');
+      armed = true;
+      e.preventDefault();
+    }
+  }
+});
+document.addEventListener('keyup', (e) => {
+  if ((e.key === ' ' || e.code === 'Space') && armed) {
+    armed = false;
+    btn.classList.remove('pressed');
+    navigate();
+    e.preventDefault();
+  }
+});
+
+/* ====== Animation loop ====== */
+function animate() {
+  const now = performance.now();
+
+  // Button center
+  const rect = btn.getBoundingClientRect();
+  const bx = rect.left + rect.width / 2;
+  const by = rect.top + rect.height / 2;
+
+  // Distance mouse -> button center
+  const d = dist(mouseX, mouseY, bx, by);
+
+  // Pull factor 0..1 inside radius, eased & boosted for snap
+  const basePull = clamp(1 - d / magnetRadius, 0, 1);
+  let magnet = clamp(easeOutQuint(basePull) * magnetBoost, 0, 1);
+  if (d < fullLockRadius) magnet = 1;
+
+  // Adaptive follow
+  const follow = baseFollow + (snapFollow - baseFollow) * Math.pow(magnet, 1.4);
+
+  // Target blends between mouse and button center
+  const targetX = mouseX + (bx - mouseX) * magnet;
+  const targetY = mouseY + (by - mouseY) * magnet;
+
+  // Smooth follow
+  cx = lerp(cx, targetX, follow);
+  cy = lerp(cy, targetY, follow);
+
+  // Cursor visuals: size & fill intensify as it commits (fill only)
+  const size = lerp(28, 22, magnet);
+  cursor.style.width = size + 'px';
+  cursor.style.height = size + 'px';
+
+  const fillA = (0.08 + (0.18 - 0.08) * magnet).toFixed(3);
+  cursor.style.backgroundColor = `rgba(0,0,0,${fillA})`;
+
+  // Position
+  cursor.style.transform = `translate(${cx}px, ${cy}px) translate(-50%, -50%)`;
+
+  // Selection (magnet) state toggling
+  const isMagnetized = d <= magnetRadius;
+  if (isMagnetized) {
+    btn.classList.add('active');
+  } else {
+    btn.classList.remove('active');
+    // If we drift out while pressed, we still honor the armed click on release
+  }
+
+  // Cursor fade logic
+  if (isMagnetized) {
+    cursor.style.opacity = '0';      // hide on lock
+  } else {
+    const dx = targetX - cx;
+    const dy = targetY - cy;
+    const speed = Math.hypot(dx, dy);
+    const idleFor = now - lastMoveAt;
+    if (idleFor > idleDelay && speed < speedHideThreshold) {
+      cursor.style.opacity = '0';
+    } else {
+      cursor.style.opacity = '1';
+    }
+  }
+
+  requestAnimationFrame(animate);
+}
+
+animate();
+
+/* Keep cursor within viewport on resize */
+addEventListener('resize', () => {
+  cx = Math.max(0, Math.min(innerWidth, cx));
+  cy = Math.max(0, Math.min(innerHeight, cy));
 });
 </script>
 
