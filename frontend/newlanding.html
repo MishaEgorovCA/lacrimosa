@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Lacrimosa</title>
+<style>
+@font-face {
+  font-family: 'Trajan Pro';
+  src: url('fonts/TrajanPro.woff2') format('woff2'),
+       url('fonts/TrajanPro.woff') format('woff'),
+       url('fonts/TrajanPro.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  background-color: #fafafa;
+  font-family: "Trajan Pro", serif;
+  font-weight: 200;
+  font-size: 22px;
+  color: rgba(0,0,0,0.7); /* original 70% black */
+  cursor: none; /* hides system mouse */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex-direction: column;
+  overflow: hidden;
+  text-transform: uppercase; /* all text same capitalization */
+}
+
+/* subtle vignette */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.035) 100%);
+  z-index: 1;
+}
+
+/* Pantone Silence mask at 17% opacity */
+body::after {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(246,239,229,0.17); /* 17% opacity */
+  mix-blend-mode: darken;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.container {
+  position: relative;
+  z-index: 3;
+}
+
+.title {
+  font-size: 17px;
+  letter-spacing: 0.08em;
+  margin: 10px 0;
+  text-shadow: 0px 2px 4px rgba(0,0,0,0.09); /* 9% shadow */
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="title">Slow &amp; steady.</div>
+</div>
+
+</body>
+</html>
