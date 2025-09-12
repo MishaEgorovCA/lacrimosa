@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pencil Experience Survey</title>
+<style>
+@font-face { font-family: "Trajan"; src: local("Trajan Pro"), local("Trajan"), serif; }
+
+/* Base */
+html, body {
+  height: 100%;
+  margin: 0;
+  background-color: #fafafa;
+  font-family: "Trajan", serif;
+  font-weight: 100;
+  font-size: 27px;
+  text-shadow: 0px 2px 4px rgba(0,0,0,0.09);
+  color: rgba(0,0,0,0.7);
+  cursor: none;
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  position: relative;
+}
+*, *::before, *::after { cursor: none !important; }
+
+/* Vignette + tint */
+body::before {
+  content: "";
+  position: fixed; inset: 0; pointer-events: none;
+  background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.035) 100%);
+  z-index: 1;
+}
+body::after {
+  content: "";
+  position: fixed; inset: 0; pointer-events: none;
+  background-color: rgba(246,239,229,0.17);
+  mix-blend-mode: darken;
+  z-index: 2;
+}
+
+/* Sections */
+.section {
+  min-height: 100vh;
+  padding: 120px 400px; /* aligns content column + button */
+  box-sizing: border-box;
+  position: relative;
+  z-index: 3;
+}
+.title {
+  font-size: 27px;
+  font-weight: 100;
+  letter-spacing: 0.09em;
+  margin-bottom: 50px;
+}
+.form-group { margin-bottom: 50px; }
+.label {
+  display: block;
+  font-size: 16.68px;
+  font-weight: 100;
+  letter-spacing: 0.09em;
+  margin-bottom: 20px;
+}
+.textarea {
+  width: 100%;
+  background: transparent; border: none; outline: none;
+  font-family: "Trajan", serif; font-weight: 100; font-size: 16.68px;
+  letter-spacing: 0.09em; color: rgba(0,0,0,0.7);
+  resize: none; line-height: 1.8;
+}
+.textarea::placeholder { color: rgba(0,0,0,0.2); }
+
+/* Sticky anchor keeps button at bottom of viewport, LEFT-aligned to content */
+.next-anchor {
+  position: sticky; bottom: 100px;
+  display: flex; justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  z-index: 4;
+}
+
+/* Button (left-aligned box + text) */
+.continue-button {
+  position: relative;
+  display: inline-block;
+  text-align: left;
+  font-family: "Trajan", serif;
+  font-size: 14.5px; font-weight: 300; letter-spacing: 0.22em;
+  color: rgba(0,0,0,0.7);
+  background: none; border: none; padding: 8px 16px;
+  text-transform: none; outline: none; user-select: none;
+  z-index: 5;
+}
+/* ensure `hidden` always wins — prevents any flash */
+.continue-button[hidden] { display: none !important; }
+
+/* Squircle (blurred, fill-only) */
+.continue-button .squircle {
+  position: absolute; inset: -6px -10px;
+  background: rgba(0,0,0,0.02);
+  border-radius: 10px;
+  opacity: 0; transform: scale(0.85); transform-origin: 50% 50%;
+  transition:
+    opacity 222ms cubic-bezier(.2,.8,.2,1),
+    transform 222ms cubic-bezier(.2,.8,.2,1),
+    background-color 222ms ease;
+  z-index: -1; pointer-events: none;
+  -webkit-backdrop-filter: blur(100px); backdrop-filter: blur(100px);
+}
+.continue-button.active .squircle { opacity: 1; transform: scale(1); }
+.continue-button.active.pressed .squircle {
+  transform: scale(0.85); background: rgba(0,0,0,0.01);
+}
+
+/* Cursor (single circle, fill-only) */
+#custom-cursor {
+  position: fixed; top: 0; left: 0;
+  width: 28px; height: 28px; border-radius: 50%;
+  pointer-events: none; background-color: rgba(0,0,0,0.08);
+  transform: translate(-50%, -50%);
+  transition: opacity 222ms ease, width 140ms ease, height 140ms ease, background-color 160ms ease;
+  z-index: 9999; opacity: 1;
+}
+</style>
+</head>
+<body>
+
+<!-- Sections (each has its own Next/Submit; buttons start hidden) -->
+<div class="section" id="perception">
+  <div class="title">Perception</div>
+  <div class="form-group">
+    <label class="label">What is your first impression of this pencil?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="form-group">
+    <label class="label">What do you think when you see someone using this pencil?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="form-group">
+    <label class="label">Which kind of person would own this pencil?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="next-anchor">
+    <button class="continue-button" hidden>
+      Next <span class="squircle" aria-hidden="true"></span>
+    </button>
+  </div>
+</div>
+
+<div class="section" id="sensory">
+  <div class="title">Sensory</div>
+  <div class="form-group">
+    <label class="label">When you first hold the pencil, which sensations or qualities stand out to you?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="form-group">
+    <label class="label">How does the pencil’s weight and texture feel in your hand—too light, too heavy, or just right?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="form-group">
+    <label class="label">Does the pencil feel balanced and comfortable to use? Why or why not?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="next-anchor">
+    <button class="continue-button" hidden>
+      Next <span class="squircle" aria-hidden="true"></span>
+    </button>
+  </div>
+</div>
+
+<div class="section" id="design">
+  <div class="title">Design</div>
+  <div class="form-group">
+    <label class="label">Which part of the pencil do you notice first and why?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="form-group">
+    <label class="label">Is there anything about the pencil that surprises you—positively or negatively?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="form-group">
+    <label class="label">If you could change one thing about how it feels, looks, or behaves, what would it be?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="next-anchor">
+    <button class="continue-button" hidden>
+      Next <span class="squircle" aria-hidden="true"></span>
+    </button>
+  </div>
+</div>
+
+<div class="section" id="proportion">
+  <div class="title">Proportion</div>
+  <div class="form-group">
+    <label class="label">How does the pencil’s length feel in your hand?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="form-group">
+    <label class="label">Does the width or thickness feel comfortable to use?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="form-group">
+    <label class="label">How do the proportions compare to other high-quality pencils you’ve used?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="next-anchor">
+    <button class="continue-button" hidden>
+      Next <span class="squircle" aria-hidden="true"></span>
+    </button>
+  </div>
+</div>
+
+<div class="section" id="function">
+  <div class="title">Function</div>
+  <div class="form-group">
+    <label class="label">How intuitive is it to hold and use the pencil for gripping graphite?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="form-group">
+    <label class="label">How secure and reliable does the grip feel when inserting or holding graphite?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="form-group">
+    <label class="label">How easy is it to adjust or replace the graphite?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="next-anchor">
+    <button class="continue-button" hidden>
+      Next <span class="squircle" aria-hidden="true"></span>
+    </button>
+  </div>
+</div>
+
+<div class="section" id="comfort">
+  <div class="title">Comfort</div>
+  <div class="form-group">
+    <label class="label">Does the titanium body feel comfortable and balanced while in use?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="form-group">
+    <label class="label">Are there any points where the pencil feels awkward or requires too much effort?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="form-group">
+    <label class="label">How does the pencil compare to traditional pencils for extended use?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="next-anchor">
+    <button class="continue-button" hidden>
+      Next <span class="squircle" aria-hidden="true"></span>
+    </button>
+  </div>
+</div>
+
+<div class="section" id="lifestyle">
+  <div class="title">Lifestyle</div>
+  <div class="form-group">
+    <label class="label">Where would you expect to buy this pencil from?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="form-group">
+    <label class="label">What lifestyle or habits do you associate with someone who loves this pencil?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="form-group">
+    <label class="label">Would you consider this pencil a gift-worthy item?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="next-anchor">
+    <button class="continue-button" hidden>
+      Next <span class="squircle" aria-hidden="true"></span>
+    </button>
+  </div>
+</div>
+
+<div class="section" id="value">
+  <div class="title">Value</div>
+  <div class="form-group">
+    <label class="label">Which price range feels natural for a pencil of this quality?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="form-group">
+    <label class="label">Would you consider this pencil a special or gift-worthy item based on its design and materials?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="form-group">
+    <label class="label">If you were to see this pencil in a store, where would you expect it to be sold?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="next-anchor">
+    <button class="continue-button" hidden>
+      Next <span class="squircle" aria-hidden="true"></span>
+    </button>
+  </div>
+</div>
+
+<div class="section" id="feedback">
+  <div class="form-group">
+    <label class="label">Any last words?</label>
+    <textarea class="textarea" rows="3" placeholder="Please type your response here."></textarea>
+  </div>
+  <div class="next-anchor">
+    <button class="continue-button" hidden>
+      Submit <span class="squircle" aria-hidden="true"></span>
+    </button>
+  </div>
+</div>
+
+<div id="custom-cursor"></div>
+
+<script type="module">
+import * as api from "/js/survey/api.js";
+/* ====== CONFIG ====== */
+const baseFollow = 0.16, snapFollow = 0.55;
+const magnetRadius = 122, fullLockRadius = 60, magnetBoost = 2.6;
+const idleDelay = 500, speedHideThreshold = 0.12;
+
+/* Elements */
+const cursor = document.getElementById('custom-cursor');
+const sections = Array.from(document.querySelectorAll('.section'));
+const buttons  = Array.from(document.querySelectorAll('.continue-button'));
+
+/* State */
+let mouseX = innerWidth/2, mouseY = innerHeight/2;
+let cx = mouseX, cy = mouseY, lastMoveAt = performance.now();
+let activeIndex = 0, armed = false;
+
+/* Helpers */
+const dist  = (x1,y1,x2,y2)=>Math.hypot(x2-x1,y2-y1);
+const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+const lerp  = (a,b,t)=>a+(b-a)*t;
+const easeOutQuint = t => 1 - Math.pow(1 - t, 5);
+const trimmed = el => el.value.replace(/\s+/g,' ').trim();
+
+/* ---- Gating: a section is READY when all its textareas are non-empty ---- */
+function evaluateReady(index){
+  const sec = sections[index];
+  const areas = Array.from(sec.querySelectorAll('textarea'));
+  const ready = areas.length > 0 && areas.every(a => trimmed(a).length > 0);
+  sec.dataset.ready = ready ? '1' : '0';
+  return ready;
+}
+function wireInputs(){
+  sections.forEach((sec, i) => {
+    const areas = Array.from(sec.querySelectorAll('textarea'));
+    areas.forEach(a => a.addEventListener('input', () => {
+      evaluateReady(i);
+      updateButtonVisibility();
+    }, { passive: true }));
+    evaluateReady(i); // initial check
+  });
+}
+wireInputs();
+
+/* First section starts active */
+sections[0].classList.add('is-active');
+
+/* Observer: most visible section is active */
+const ratios = new Array(sections.length).fill(0);
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(ent => {
+    const i = sections.indexOf(ent.target);
+    ratios[i] = ent.intersectionRatio;
+  });
+  let best = 0, bestRatio = -1;
+  for (let i=0;i<ratios.length;i++){
+    if (ratios[i] > bestRatio) { best = i; bestRatio = ratios[i]; }
+  }
+  if (best !== activeIndex) {
+    sections[activeIndex]?.classList.remove('is-active');
+    buttons[activeIndex]?.classList.remove('active','pressed');
+    activeIndex = best;
+    sections[activeIndex]?.classList.add('is-active');
+    updateButtonVisibility();
+  }
+}, { threshold: [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1] });
+sections.forEach(sec => io.observe(sec));
+
+/* Button visibility: only show when (active AND ready) */
+function updateButtonVisibility(){
+  buttons.forEach((btn, i) => {
+    const shouldShow = (i === activeIndex) && sections[i].dataset.ready === '1';
+    btn.hidden = !shouldShow;
+    if (!shouldShow) {
+      btn.classList.remove('active','pressed');
+      armed = false;
+    }
+  });
+}
+updateButtonVisibility();
+
+/* Navigation */
+function goFrom(i){
+  if (buttons[i].hidden) return; // guard
+  if (i >= sections.length-1) {
+    submit();
+    //alert("Thank you! Your responses have been recorded.");
+    return;
+  }
+  sections[i+1].scrollIntoView({ behavior:"smooth", block:"start" });
+}
+buttons.forEach((b,i)=> b.addEventListener('click', e => { e.preventDefault(); goFrom(i); }));
+
+/* Cursor tracking */
+document.addEventListener('mousemove', e => { mouseX=e.clientX; mouseY=e.clientY; lastMoveAt=performance.now(); }, {passive:true});
+
+/* Armed-anywhere press (only if the active section’s button is visible) */
+window.addEventListener('pointerdown', () => {
+  const btn = buttons[activeIndex];
+  if (btn && !btn.hidden && btn.classList.contains('active')) {
+    btn.classList.add('pressed');
+    armed = true; // press began while selected; release anywhere counts
+  }
+});
+window.addEventListener('pointerup', () => {
+  const btn = buttons[activeIndex];
+  if (armed && btn && !btn.hidden) {
+    armed = false;
+    btn.classList.remove('pressed');
+    goFrom(activeIndex);
+  } else {
+    btn?.classList.remove('pressed');
+  }
+});
+window.addEventListener('pointercancel', () => { armed=false; buttons[activeIndex]?.classList.remove('pressed'); });
+window.addEventListener('blur', () => { armed=false; buttons[activeIndex]?.classList.remove('pressed'); });
+
+/* Keyboard */
+document.addEventListener('keydown', e => {
+  if (e.key==='Enter') goFrom(activeIndex);
+  if (e.key===' ' || e.code==='Space') {
+    const btn = buttons[activeIndex];
+    if (btn && !btn.hidden && btn.classList.contains('active')) {
+      btn.classList.add('pressed');
+      armed = true;
+      e.preventDefault();
+    }
+  }
+});
+document.addEventListener('keyup', e => {
+  if ((e.key===' ' || e.code==='Space') && armed) {
+    armed=false; buttons[activeIndex]?.classList.remove('pressed'); goFrom(activeIndex); e.preventDefault();
+  }
+});
+
+/* Magnetized cursor toward the active button (only when visible) */
+function animate(){
+  const btn = buttons[activeIndex];
+  if (btn && !btn.hidden) {
+    const r = btn.getBoundingClientRect();
+    const bx = r.left + r.width/2, by = r.top + r.height/2;
+    const d = dist(mouseX, mouseY, bx, by);
+
+    const basePull = clamp(1 - d/magnetRadius, 0, 1);
+    let magnet = clamp(easeOutQuint(basePull) * magnetBoost, 0, 1);
+    if (d < fullLockRadius) magnet = 1;
+
+    const follow = baseFollow + (snapFollow - baseFollow) * Math.pow(magnet, 1.4);
+    const targetX = mouseX + (bx - mouseX) * magnet;
+    const targetY = mouseY + (by - mouseY) * magnet;
+
+    cx = lerp(cx, targetX, follow);
+    cy = lerp(cy, targetY, follow);
+
+    const size = lerp(28, 22, magnet);
+    cursor.style.width = size + 'px';
+    cursor.style.height = size + 'px';
+
+    const fillA = (0.08 + (0.18 - 0.08) * magnet).toFixed(3);
+    cursor.style.backgroundColor = `rgba(0,0,0,${fillA})`;
+
+    cursor.style.transform = `translate(${cx}px, ${cy}px) translate(-50%, -50%)`;
+
+    if (d <= magnetRadius) btn.classList.add('active'); else btn.classList.remove('active');
+
+    // fade on lock or idle
+    if (d <= magnetRadius) {
+      cursor.style.opacity = '0';
+    } else {
+      const dx = targetX - cx, dy = targetY - cy;
+      const speed = Math.hypot(dx, dy);
+      const idleFor = performance.now() - lastMoveAt;
+      cursor.style.opacity = (idleFor > idleDelay && speed < speedHideThreshold) ? '0' : '1';
+    }
+  } else {
+    // No visible button: just follow mouse and allow idle fade
+    cx = lerp(cx, mouseX, baseFollow);
+    cy = lerp(cy, mouseY, baseFollow);
+    cursor.style.transform = `translate(${cx}px, ${cy}px) translate(-50%, -50%)`;
+    const idleFor = performance.now() - lastMoveAt;
+    cursor.style.opacity = (idleFor > idleDelay) ? '0' : '1';
+  }
+
+  requestAnimationFrame(animate);
+}
+animate();
+
+function submit() {
+    function collectResponses() {
+        const responses = {};
+        sections.forEach(section => {
+            const textareas = document.querySelectorAll(`#${section.id} .textarea`);
+            responses[section.id] = Array.from(textareas).map(textarea => textarea.value);
+        });
+        return responses;
+    }
+
+    const code = new URLSearchParams(window.location.search).get("code") || "";
+    const responses = collectResponses();
+    api.submitResponses(code, responses).then((res) => {
+        if (res.success) {
+            alert("Thank you! Your responses have been recorded.");
+        } else {
+            alert("There was an error recording your responses. Please let David know.");
+        }
+    });
+}
+</script>
+
+</body>
+</html>

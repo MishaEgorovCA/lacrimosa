@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Panel — Lacrimosa Surveys</title>
+  <style>
+    :root{
+      --bg:#ffffff; --fg:#111; --muted:#666; --accent:#111; --border:#e6e6e6;
+      --ok:#0a7; --err:#c00; --card:#fafafa;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; background:var(--bg); color:var(--fg)}
+    header{ position: static; background:#fff; border-bottom:1px solid var(--border); padding:14px 18px; z-index:1; display:flex; gap:12px; align-items:center; flex-wrap:wrap }
+    header h1{font-size:16px; letter-spacing:.08em; font-weight:600; margin:0 10px 0 0}
+
+    .row{display:flex; gap:16px; align-items:center; flex-wrap:wrap}
+    .spacer{flex:1}
+
+    input[type="text"], textarea{border:1px solid var(--border); padding:10px 12px; border-radius:8px; font-size:14px; width:100%; background:#fff; color:var(--fg)}
+    textarea{min-height:90px; resize:vertical}
+    label{font-size:12px; color:var(--muted); display:block; margin-bottom:6px}
+
+    button{background:var(--accent); color:#fff; border:0; padding:10px 14px; border-radius:8px; cursor:pointer; font-size:14px}
+    button.secondary{background:#f2f2f2; color:#111}
+    button.ghost{background:transparent; color:var(--accent); border:1px solid var(--border)}
+    button:disabled{opacity:.5; cursor:not-allowed}
+
+    main{padding:20px; display:grid; grid-template-columns:repeat(12,1fr); gap:20px; max-width:1200px; margin:0 auto}
+    .card{grid-column: span 12; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px}
+    .card h2{margin:0 0 12px 0; font-size:14px; letter-spacing:.06em}
+
+    .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+    .grid-3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px}
+
+    .status{font-size:12px; margin-left:8px}
+    .status.ok{color:var(--ok)}
+    .status.err{color:var(--err)}
+
+    table{width:100%; border-collapse:collapse; font-size:14px}
+    thead th{position:sticky; top:0; background:#fff; z-index:1}
+    th, td{border-bottom:1px solid var(--border); padding:10px; vertical-align:top; text-align:left}
+
+    /* Ensure consistent sizing for user/message cells */
+    td.col-user, td.col-message, th.col-user, th.col-message{ font-size:14px; line-height:1.5; font-weight:400; white-space: pre-wrap; }
+
+    /* Modal for responses */
+    .modal{ position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; z-index:9999 }
+    .modal.show{ display:flex }
+    .modal-card{ width:min(1000px, 92vw); height:min(86vh, 900px); background:#fff; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,.2); display:flex; flex-direction:column; overflow:hidden }
+    .modal-header{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 14px; border-bottom:1px solid var(--border) }
+    .modal-title{ margin:0; font-size:14px; letter-spacing:.06em }
+    .modal-body{ padding:14px; overflow:auto }
+    .close-btn{ background:#f3f3f3; color:#111; border:1px solid var(--border); padding:8px 10px; border-radius:8px; cursor:pointer }
+
+    .resp-sec{ border:1px solid var(--border); border-radius:10px; padding:10px 12px; background:#fff; }
+    .resp-sec + .resp-sec{ margin-top:10px }
+    .resp-sec h3{ margin:0 0 6px 0; font-size:13px; letter-spacing:.04em }
+    .resp-sec ol{ margin:0; padding-left:18px; }
+
+    .token{min-width:280px}
+    .monospace{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+    .right{ text-align:right }
+
+    .toast{position:fixed; bottom:18px; right:18px; background:#111; color:#fff; padding:10px 14px; border-radius:10px; opacity:0; transform:translateY(8px); transition:opacity .25s, transform .25s}
+    .toast.show{opacity:1; transform:translateY(0)}
+
+    .icon-btn{ background:transparent; border:1px solid var(--border); color:#333; padding:6px 8px; border-radius:8px; display:inline-flex; align-items:center; gap:6px; cursor:pointer }
+    .icon-btn:hover{ background:#f6f6f6 }
+    .icon-btn.danger{ border-color:#ffdbdb; color:#a30 }
+    .icon-btn.danger:hover{ background:#ffeeee }
+    .icon-btn.primary{ border-color:var(--border); color:#111 }
+    .icon{ width:16px; height:16px; display:inline-block; }
+
+    /* Collapsible auth row */
+    .collapsible{ overflow:hidden; max-height:140px; opacity:1; transition: max-height .25s ease, opacity .25s ease, margin .25s ease }
+    .collapsible.collapsed{ max-height:0; opacity:0; margin-top:0; pointer-events:none }
+
+    .tiny{ padding:6px 10px; font-size:12px }
+    .icon-inline{ width:14px; height:14px; vertical-align:-2px; margin-right:6px }
+
+    .badge{ display:inline-flex; align-items:center; padding:4px 8px; border-radius:999px; font-size:12px; line-height:1; border:1px solid var(--border); }
+    .badge.muted{ background:#f6f6f6; color:#888; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Admin</h1>
+    <button id="toggleAuth" class="ghost tiny" title="Show/hide token area" aria-expanded="true">
+      <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="3" y="11" width="18" height="10" rx="2" ry="2"></rect>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+      </svg>
+      Auth
+    </button>
+    <div class="spacer"></div>
+    <div class="row">
+      <button id="refresh" class="secondary">Refresh</button>
+    </div>
+
+    <div id="authWrap" class="row collapsible" style="width:100%; margin-top:10px">
+      <label for="token" style="margin:0">Auth token</label>
+      <input id="token" class="token monospace" type="text" placeholder="Enter admin token" />
+      <button id="saveToken" class="ghost" title="Save token to this browser">Save</button>
+      <span id="tokenStatus" class="status"></span>
+    </div>
+  </header>
+
+  <main>
+    <section class="card" id="addCard">
+      <h2>Add survey</h2>
+      <div class="grid-3">
+        <div>
+          <label>Username</label>
+          <input id="username" type="text" placeholder="e.g. Alice" />
+        </div>
+        <div>
+          <label>Code</label>
+          <div class="row">
+            <input id="code" type="text" class="monospace" placeholder="6-digit code" />
+            <button id="genCode" class="secondary" title="Generate unique code">Generate</button>
+          </div>
+        </div>
+        <div></div>
+        <div style="grid-column: span 3">
+          <label>Message (shown to user)</label>
+          <textarea id="message" placeholder="Message to participant..."></textarea>
+        </div>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button id="addBtn">Add</button>
+        <span id="addStatus" class="status"></span>
+      </div>
+    </section>
+
+    <section class="card" id="removeCard" hidden>
+      <!-- deprecated by per-row actions -->
+    </section>
+
+    <section class="card" id="listCard">
+      <h2>Surveys</h2>
+      <div id="listStatus" class="status"></div>
+      <div style="max-height:60vh; overflow:auto; border:1px solid var(--border); border-radius:10px">
+        <table>
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th class="col-user">User</th>
+              <th class="col-message">Message</th>
+              <th class="right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Response Modal -->
+  <div id="respModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-card" role="document">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle">Response</h3>
+        <div style="display:flex; gap:8px; align-items:center">
+          <button id="closeModal" class="close-btn">Close</button>
+        </div>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const $ = (q, el=document) => el.querySelector(q);
+    const rowsEl = $('#rows');
+    const listStatus = $('#listStatus');
+    const tokenInput = $('#token');
+    const tokenStatus = $('#tokenStatus');
+    const authWrap = $('#authWrap');
+    const toggleAuthBtn = $('#toggleAuth');
+
+    const respModal = $('#respModal');
+    const modalTitle = $('#modalTitle');
+    const modalBody = $('#modalBody');
+    const closeModalBtn = $('#closeModal');
+
+    const responseMap = new Map();
+
+    function toast(msg){
+      const t = $('#toast');
+      t.textContent = msg; t.classList.add('show');
+      clearTimeout(t._tid); t._tid = setTimeout(()=>t.classList.remove('show'), 2000);
+    }
+
+    function getToken(){ return tokenInput.value.trim(); }
+    function setSavedTokenStatus(ok){
+      tokenStatus.textContent = ok ? 'token saved' : '';
+      tokenStatus.className = 'status ' + (ok ? 'ok':'');
+    }
+
+    function setAuthCollapsed(collapsed){
+      if (!authWrap) return;
+      authWrap.classList.toggle('collapsed', !!collapsed);
+      if (toggleAuthBtn){ toggleAuthBtn.setAttribute('aria-expanded', collapsed ? 'false':'true'); }
+      try{ localStorage.setItem('adminAuthCollapsed', collapsed ? '1':'0'); }catch(e){}
+    }
+
+    function adminFetch(path, body){
+      const headers = { 'Content-Type':'application/json' };
+      const token = getToken();
+      if (token) headers['Authorization'] = token;
+      return fetch(path, { method:'POST', headers, body: JSON.stringify(body || {}) })
+        .then(async res => {
+          const data = await res.json().catch(()=>({}));
+          if (!res.ok) throw Object.assign(new Error(data.error || 'Request failed'), { detail: data });
+          return data;
+        });
+    }
+
+    function sectionOrder(){
+      return ['perception','sensory','design','proportion','function','comfort','lifestyle','value','feedback'];
+    }
+
+    function escapeHtml(s){
+      return String(s)
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'",'&#39;');
+    }
+
+    function renderResponseFull(resp){
+      if (!resp) return '<em class="status">No response</em>';
+      try{ if (typeof resp === 'string') resp = JSON.parse(resp); }catch(e){}
+      if (!resp || typeof resp !== 'object') return `<pre class="monospace" style="white-space:pre-wrap; margin:0">${escapeHtml(String(resp))}</pre>`;
+      const order = sectionOrder();
+      const parts = [];
+      for (const key of order){
+        if (!Array.isArray(resp[key])) continue;
+        const items = resp[key].filter(v => String(v).trim().length>0).map(v=>`<li>${escapeHtml(v)}</li>`).join('');
+        parts.push(`<div class="resp-sec"><h3>${escapeHtml(key)}</h3>${items ? `<ol>${items}</ol>` : '<em class="status">empty</em>'}</div>`);
+      }
+      return parts.join('') || '<em class="status">No sections</em>';
+    }
+
+    function hasNonEmptyResponse(resp){
+      if (!resp) return false;
+      try { if (typeof resp === 'string') resp = JSON.parse(resp); } catch(e) {}
+      if (!resp) return false;
+      if (typeof resp !== 'object') return String(resp).trim().length > 0;
+      const order = sectionOrder();
+      for (const key of order){
+        const arr = resp[key];
+        if (Array.isArray(arr) && arr.some(v => String(v).trim().length > 0)) return true;
+      }
+      // If object has any other non-empty primitive
+      return Object.values(resp).some(v => Array.isArray(v) ? v.some(x=>String(x).trim().length>0) : String(v ?? '').trim().length>0);
+    }
+
+    function actionCell(code, canShow){
+      const showBtn = canShow ? `
+          <button class="icon-btn primary" data-action="view" data-code="${escapeHtml(code)}" title="Show response">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            Response
+          </button>` : `<span class="badge muted" title="No response submitted yet">No response</span>`;
+      return `
+        <div style="display:flex; gap:8px; justify-content:flex-end">
+          ${showBtn}
+          <button class="icon-btn danger" data-action="delete" data-code="${escapeHtml(code)}" title="Delete survey">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+              <path d="M10 11v6"></path>
+              <path d="M14 11v6"></path>
+              <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            Remove
+          </button>
+        </div>`;
+    }
+
+    async function refreshList(){
+      listStatus.textContent = 'Loading...'; listStatus.className='status';
+      rowsEl.innerHTML = '';
+      responseMap.clear();
+      try{
+        const rows = await adminFetch('/api/admin/list-responses');
+        if (!Array.isArray(rows) || rows.length === 0){ listStatus.textContent = 'No records'; return; }
+        const frag = document.createDocumentFragment();
+        for (const r of rows){
+          responseMap.set(r.code, r.response);
+          const canShow = hasNonEmptyResponse(r.response);
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="monospace">${escapeHtml(r.code)}</td>
+            <td class="col-user">${escapeHtml(r.username ?? '')}</td>
+            <td class="col-message">${escapeHtml(r.message ?? '')}</td>
+            <td class="right">${actionCell(r.code ?? '', canShow)}</td>
+          `;
+          frag.appendChild(tr);
+        }
+        rowsEl.appendChild(frag);
+        listStatus.textContent = `${rows.length} record(s)`; listStatus.className='status ok';
+      }catch(err){ listStatus.textContent = err.message || 'Failed to load'; listStatus.className='status err'; }
+    }
+
+    function openModalFor(code){
+      const resp = responseMap.get(code);
+      modalTitle.textContent = `Response — ${code}`;
+      modalBody.innerHTML = renderResponseFull(resp);
+      respModal.classList.add('show');
+      respModal.setAttribute('aria-hidden','false');
+    }
+    function closeModal(){
+      respModal.classList.remove('show');
+      respModal.setAttribute('aria-hidden','true');
+    }
+
+    // Delegated row actions
+    rowsEl.addEventListener('click', async (e)=>{
+      const btn = e.target.closest('button[data-action]');
+      if (!btn) return;
+      const action = btn.getAttribute('data-action');
+      const code = btn.getAttribute('data-code');
+      if (action === 'view'){
+        openModalFor(code);
+        return;
+      }
+      if (action === 'delete'){
+        if (!code) return;
+        if (!confirm(`Remove survey ${code}?`)) return;
+        btn.disabled = true;
+        try{
+          await adminFetch('/api/admin/remove-survey', { code });
+          toast('Survey removed');
+          const row = btn.closest('tr'); if (row) row.remove();
+        }catch(err){ toast(err.message || 'Failed to remove'); }
+        finally{ btn.disabled = false; }
+      }
+    });
+
+    // Modal close handlers
+    closeModalBtn.addEventListener('click', closeModal);
+    respModal.addEventListener('click', (e)=>{ if (e.target === respModal) closeModal(); });
+    document.addEventListener('keydown', (e)=>{ if (e.key === 'Escape' && respModal.classList.contains('show')) closeModal(); });
+
+    // Add survey handlers
+    $('#genCode').addEventListener('click', async ()=>{
+      const btn = $('#genCode'); btn.disabled = true; const s = $('#addStatus'); s.textContent='';
+      try{
+        const { code } = await adminFetch('/api/admin/generate-unique-code');
+        $('#code').value = code || '';
+      }catch(err){ toast(err.message || 'Failed to generate code'); }
+      finally{ btn.disabled = false; }
+    });
+
+    $('#addBtn').addEventListener('click', async ()=>{
+      const username = $('#username').value.trim();
+      const message = $('#message').value.trim();
+      const code = $('#code').value.trim();
+      const s = $('#addStatus'); s.textContent=''; s.className='status';
+      if (!username || !message || !code){ s.textContent='Please fill username, message and code'; s.className='status err'; return; }
+      try{
+        await adminFetch('/api/admin/add-survey', { username, message, code });
+        s.textContent='Added'; s.className='status ok'; toast('Survey added');
+        await refreshList();
+      }catch(err){
+        const msg = (err.detail && err.detail.error && /UNIQUE|constraint/i.test(err.detail.error))
+          ? 'Code already exists'
+          : (err.message || 'Failed to add');
+        s.textContent = msg; s.className='status err';
+      }
+    });
+
+    // Token persistence
+    $('#saveToken').addEventListener('click', ()=>{
+      const token = getToken();
+      if (!token){ setSavedTokenStatus(false); toast('Token cleared'); localStorage.removeItem('adminToken'); return; }
+      localStorage.setItem('adminToken', token);
+      setSavedTokenStatus(true); toast('Token saved');
+    });
+
+    // Toggle auth area
+    toggleAuthBtn.addEventListener('click', ()=>{
+      const collapsed = !authWrap || !authWrap.classList ? false : !authWrap.classList.contains('collapsed');
+      setAuthCollapsed(collapsed);
+    });
+
+    $('#refresh').addEventListener('click', refreshList);
+
+    // Init
+    (function init(){
+      const savedToken = localStorage.getItem('adminToken');
+      const savedCollapsed = localStorage.getItem('adminAuthCollapsed');
+      if (savedToken){ tokenInput.value = savedToken; setSavedTokenStatus(true); }
+      // Default: collapse if token exists or savedCollapsed === '1'
+      const shouldCollapse = savedCollapsed === '1' || (!!savedToken && savedCollapsed !== '0');
+      setAuthCollapsed(shouldCollapse);
+      refreshList();
+    })();
+  </script>
+</body>
+</html>
