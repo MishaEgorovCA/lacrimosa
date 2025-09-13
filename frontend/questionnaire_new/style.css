@@ -1,0 +1,30 @@
+:root {
+    --bg: #f8f8f8;
+    --fg: #5f5f5f;
+}
+
+.input-container {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.input-container input {
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+    text-align: center;
+    border: 1px solid var(--fg);
+    border-radius: 4px;
+    background-color: var(--bg);
+    color: var(--fg);
+    margin: 0 5px;
+    transition: border-color 0.3s ease;
+}
+
+.input-container input:focus {
+    outline: none;
+    border-color: darken(var(--fg), 10%);
+}

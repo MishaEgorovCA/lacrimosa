@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Briefing</title>
+<style>
+@font-face {
+  font-family: 'Trajan';
+  src: local('Trajan Pro'), local('Trajan'), serif;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  background-color: #fafafa;
+  font-family: 'Trajan', serif;
+  font-weight: 200;
+  font-size: 17px;
+ text-shadow: 0px 2px 4px rgba(0,0,0,0.09); /* 9% shadow */
+  color: #4d4d4d; /* 70% black */
+  cursor: none;
+  scroll-behavior: smooth;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 50px;
+  box-sizing: border-box;
+}
+
+/* subtle vignette */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.035) 100%);
+  z-index: 1;
+}
+
+/* Pantone Silence mask at 17% opacity */
+body::after {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(246,239,229,0.17); /* 17% opacity */
+  mix-blend-mode: darken;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.container {
+  max-width: 700px;
+  z-index: 3;
+}
+
+h1 {
+  font-family: 'Trajan', serif;
+  font-size: 27px;
+  font-weight: 200;
+  letter-spacing: 0.09em; /* 9% tracking */
+  margin-bottom: 50px;
+}
+
+p {
+  font-family: 'Trajan', serif;
+  font-size: 17px;
+  line-height: 1.8;
+  letter-spacing: 0.09em; /* 9% tracking */
+  margin-bottom: 20px;
+  color: #4d4d4d; /* 70% black */
+  font-style: italic;
+}
+
+.continue-button {
+  font-family: 'Trajan', serif;
+  font-size: 17px;
+  font-weight: 200;
+  letter-spacing: 0.09em;
+  color: #4d4d4d; /* 70% black */
+  background: none;
+  border: none;
+  cursor: none;
+  padding: 10px 0;
+  margin-top: 40px; /* extra space after name */
+}
+
+#custom-cursor {
+  position: fixed;
+  top: 0; left: 0;
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  pointer-events: none;
+  background-color: rgba(0,0,0,0.05);
+  transform: translate(-50%, -50%);
+  transition: background-color 0.3s, width 0.3s, height 0.3s, opacity 0.2s;
+  z-index: 9999;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Hi <span id="name"></span>,</h1>
+
+  <p id="message"></p>
+
+  <button class="continue-button" id="actionButton">Continue</button>
+</div>
+
+<div id="custom-cursor"></div>
+
+<script type="module">
+import * as api from "/js/survey/api.js";
+
+const code = new URLSearchParams(window.location.search).get("code");
+
+api.getIntro(code).then(intro => {
+  document.getElementById("name").textContent = intro?.name || "Error in server response";
+  document.getElementById("message").textContent = intro?.message || "Error in server response";
+  document.getElementById("message").setAttribute('style', 'white-space: pre-wrap;');
+});
+
+
+// Custom cursor
+const customCursor = document.getElementById('custom-cursor');
+document.addEventListener('mousemove', e => {
+  customCursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`;
+});
+
+// Continue button navigation
+const actionButton = document.getElementById("actionButton");
+actionButton.addEventListener("click", () => {
+  window.location.href = "survey.html?code=" + code;
+});
+
+// Press Enter to navigate to survey.html
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    window.location.href = "survey.html?code=" + code;
+  }
+});
+</script>
+
+</body>
+</html>
