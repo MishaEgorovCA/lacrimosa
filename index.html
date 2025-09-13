@@ -1,23 +1,66 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <title>⠀</title>
-    <link href="favicon.png" rel="icon" type="image/x-icon">
-    <link rel="stylesheet" href="style.css">
-    <script type="module" src="js/main.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Lacrimosa</title>
+<style>
+@font-face {
+  font-family: 'Trajan Pro';
+  src: url('fonts/TrajanPro-Regular.ttf') format('truetype');
+}
+ 
+html, body {
+  height: 100%;
+  margin: 0;
+  background-color: #fafafa;
+  font-family: "Trajan Pro", serif;
+  font-size: 17px;
+  color: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  text-transform: uppercase;
+  cursor: none;
+}
+
+/* subtle vignette */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  background: radial-gradient(circle, transparent 60%, rgba(0,0,0,0.035) 100%);
+}
+
+.title {
+  letter-spacing: 0.08em;
+  text-shadow: 0px 2px 4px rgba(0,0,0,0.09);
+}
+
+/* Cursor (single circle, fill-only) */
+.custom-cursor {
+  position: fixed; top: 0; left: 0;
+  width: 28px; height: 28px; border-radius: 50%;
+  pointer-events: none; background-color: rgba(0,0,0,0.08);
+  transform: translate(-50%, -50%);
+  transition: opacity 222ms ease, width 140ms ease, height 140ms ease, background-color 160ms ease;
+  z-index: 9999; opacity: 1;
+}
+</style>
 </head>
-
 <body>
-    <div class="button-container">
-        <p>no payment until shipment.</p>
-        <button id="pre-order">pre-order now</button>
-    </div>
-    <div class="textOutput" style="display: none;">
-        <span class="cursor" id="cursor"></span>
+    <div class="custom-cursor"></div>
+    <div class="title">Slow &amp; steady.</div>
 
-    </div>
-    <textarea id="txt" autocomplete="off" inputmode="text" style="display: none;"></textarea>
+    <!--Custom Cursor Script-->
+    <script>
+        const cursor = document.querySelector('.custom-cursor');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+    </script>
 </body>
-
 </html>
