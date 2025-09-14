@@ -55,14 +55,58 @@ body::before {
 
     <!--Custom Cursor Script-->
     <script>
-      //only do if not on mobile
-      if (!/Mobi|Android/i.test(navigator.userAgent)) {
-        const cursor = document.querySelector('.custom-cursor');
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-        });
+  if (!/Mobi|Android/i.test(navigator.userAgent)) {
+    const cursor = document.querySelector('.custom-cursor');
+
+    const show = () => { cursor.style.opacity = '1'; };
+    const hide = () => { cursor.style.opacity = '0'; clearInactivityTimer(); };
+
+    // Inactivity timer (2s)
+    const INACTIVITY_MS = 2000;
+    let inactivityTimer = null;
+    const clearInactivityTimer = () => {
+      if (inactivityTimer) {
+        clearTimeout(inactivityTimer);
+        inactivityTimer = null;
       }
+    };
+    const resetInactivityTimer = () => {
+      clearInactivityTimer();
+      inactivityTimer = setTimeout(() => { hide(); }, INACTIVITY_MS);
+    };
+
+    // Use Pointer Events when available, fallback to mousemove
+    const moveEvt = window.PointerEvent ? 'pointermove' : 'mousemove';
+    const moveHandler = (e) => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+      show();
+      resetInactivityTimer();
+    };
+    document.addEventListener(moveEvt, moveHandler, { passive: true });
+
+    // Hide when pointer leaves the window (works in Firefox)
+    window.addEventListener('mouseout', (e) => {
+      if (!e.relatedTarget) hide();
+    });
+
+    // Fallbacks
+    window.addEventListener('blur', hide);
+    window.addEventListener('focus', () => { show(); resetInactivityTimer(); });
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') { show(); resetInactivityTimer(); }
+      else hide();
+    });
+
+    // Optional: also react to pointerout leaving the document
+    document.addEventListener('pointerout', (e) => {
+      if (e.pointerType === 'mouse' && !e.relatedTarget) hide();
+    });
+
+    // Start initial inactivity countdown
+    resetInactivityTimer();
+  }
     </script>
 </body>
 </html>
