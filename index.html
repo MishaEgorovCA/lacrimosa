@@ -21,7 +21,6 @@ html, body {
   align-items: center;
   justify-content: center;
   text-align: center;
-  text-transform: uppercase;
   cursor: none;
 }
 
@@ -57,9 +56,13 @@ body::before {
     <!--Custom Cursor Script-->
     <script>
         const cursor = document.querySelector('.custom-cursor');
+        let x = 0;
+        let y = 0;
         document.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
+            x = e.clientX;
+            y = e.clientY;
+            cursor.style.left = x + 'px';
+            cursor.style.top = y + 'px';
         });
     </script>
 </body>
